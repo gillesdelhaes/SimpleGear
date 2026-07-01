@@ -6,6 +6,16 @@ export interface AssetStatus {
   sort_order: number
 }
 
+export interface AssetModel {
+  id: number
+  name: string
+  manufacturer: string | null
+  model_number: string | null
+  category_id: number | null
+  eol_years: number | null
+  notes: string | null
+}
+
 export interface AssetCategory {
   id: number
   name: string
@@ -52,6 +62,8 @@ export interface Asset {
   name: string
   asset_tag: string
   serial: string | null
+  asset_model_id: number | null
+  asset_model: AssetModel | null
   make: string | null
   model: string | null
   model_number: string | null

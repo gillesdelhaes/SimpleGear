@@ -10,11 +10,12 @@ from sqlmodel import select, func
 
 from app.auth.deps import get_current_user, require_admin
 from app.database import get_session
-from app.models import Asset, AssetCategory, AssetStatus, Assignment, Location, Person, SystemUser
+from app.models import Asset, AssetCategory, AssetModel, AssetStatus, Assignment, Location, Person, SystemUser
 from app.schemas.asset import (
     AssetCreate, AssetRead, AssetUpdate, AssignmentRead, AssignRequest,
     BulkRequest, ReleaseRequest,
 )
+from app.schemas.asset_model import AssetModelRead
 from app.schemas.category import CategoryRead
 from app.schemas.location import LocationRead
 from app.schemas.person import PersonRead
@@ -32,6 +33,13 @@ def _days_until(d: Optional[date]) -> Optional[int]:
 async def _build_asset_read(asset: Asset, session: AsyncSession) -> AssetRead:
     status_result = await session.execute(select(AssetStatus).where(AssetStatus.id == asset.status_id))
     status = status_result.scalar_one()
+
+    asset_model = None
+    if asset.asset_model_id:
+        am_result = await session.execute(select(AssetModel).where(AssetModel.id == asset.asset_model_id))
+        am = am_result.scalar_one_or_none()
+        if am:
+            asset_model = AssetModelRead.model_validate(am, from_attributes=True)
 
     category = None
     if asset.category_id:
@@ -60,6 +68,8 @@ async def _build_asset_read(asset: Asset, session: AsyncSession) -> AssetRead:
         name=asset.name,
         asset_tag=asset.asset_tag,
         serial=asset.serial,
+        asset_model_id=asset.asset_model_id,
+        asset_model=asset_model,
         make=asset.make,
         model=asset.model,
         model_number=asset.model_number,

@@ -4,6 +4,7 @@ from app.models.status import AssetStatus
 from app.models.category import AssetCategory
 from app.models.location import Location
 from app.models.person import Person
+from app.models.asset_model import AssetModel
 from app.models.asset import Asset
 from app.models.assignment import Assignment
 
@@ -14,6 +15,7 @@ __all__ = [
     "AssetCategory",
     "Location",
     "Person",
+    "AssetModel",
     "Asset",
     "Assignment",
 ]

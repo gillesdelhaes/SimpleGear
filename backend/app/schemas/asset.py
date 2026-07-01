@@ -4,6 +4,7 @@ from pydantic import BaseModel
 from app.schemas.status import StatusRead
 from app.schemas.category import CategoryRead
 from app.schemas.location import LocationRead
+from app.schemas.asset_model import AssetModelRead
 
 
 class PersonBrief(BaseModel):
@@ -18,6 +19,8 @@ class AssetRead(BaseModel):
     name: str
     asset_tag: str
     serial: Optional[str]
+    asset_model_id: Optional[int]
+    asset_model: Optional[AssetModelRead]
     make: Optional[str]
     model: Optional[str]
     model_number: Optional[str]
@@ -46,6 +49,7 @@ class AssetCreate(BaseModel):
     name: str
     asset_tag: str
     serial: Optional[str] = None
+    asset_model_id: Optional[int] = None
     make: Optional[str] = None
     model: Optional[str] = None
     model_number: Optional[str] = None
@@ -65,6 +69,7 @@ class AssetUpdate(BaseModel):
     name: Optional[str] = None
     asset_tag: Optional[str] = None
     serial: Optional[str] = None
+    asset_model_id: Optional[int] = None
     make: Optional[str] = None
     model: Optional[str] = None
     model_number: Optional[str] = None

@@ -204,6 +204,13 @@ export default function AssetDetail() {
             <h3 className="text-xs font-bold uppercase tracking-widest text-neutral-400">Identification</h3>
             <Field label="Asset tag" value={asset.asset_tag} mono />
             <Field label="Serial number" value={asset.serial} mono />
+            {asset.asset_model && (
+              <div>
+                <div className="text-[10px] font-bold uppercase tracking-widest text-neutral-400 mb-0.5">Model</div>
+                <div className="text-sm text-neutral-800">{asset.asset_model.name}</div>
+                {asset.asset_model.manufacturer && <div className="text-xs text-neutral-400 mt-0.5">{asset.asset_model.manufacturer}</div>}
+              </div>
+            )}
             <Field label="Make" value={asset.make} />
             <Field label="Model" value={asset.model} />
             <Field label="Model number" value={asset.model_number} mono />

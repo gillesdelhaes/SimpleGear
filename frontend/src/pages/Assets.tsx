@@ -2,7 +2,7 @@ import { useState, useRef, useCallback } from 'react'
 import { Link } from 'react-router-dom'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import api from '../lib/axios'
-import type { Asset, AssetStatus, AssetCategory, Location } from '../types'
+import type { Asset, AssetModel, AssetStatus, AssetCategory, Location } from '../types'
 import StatusBadge from '../components/shared/StatusBadge'
 import EOLBadge from '../components/shared/EOLBadge'
 import Modal from '../components/shared/Modal'
@@ -24,6 +24,7 @@ function AssetForm({ asset, onClose, statuses, categories, locations }: {
     name: asset?.name ?? '',
     asset_tag: asset?.asset_tag ?? '',
     serial: asset?.serial ?? '',
+    asset_model_id: asset?.asset_model_id?.toString() ?? '',
     make: asset?.make ?? '',
     model: asset?.model ?? '',
     model_number: asset?.model_number ?? '',
@@ -41,10 +42,31 @@ function AssetForm({ asset, onClose, statuses, categories, locations }: {
   const set = (k: string) => (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) =>
     setForm((p) => ({ ...p, [k]: e.target.value }))
 
+  const { data: models = [] } = useQuery<AssetModel[]>({ queryKey: ['models'], queryFn: () => api.get('/models').then(r => r.data) })
+
+  const handleModelChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const id = e.target.value
+    setForm(p => ({ ...p, asset_model_id: id }))
+    if (id) {
+      const m = models.find(m => m.id === Number(id))
+      if (m) {
+        setForm(p => ({
+          ...p,
+          asset_model_id: id,
+          make: m.manufacturer ?? p.make,
+          model: m.name,
+          model_number: m.model_number ?? p.model_number,
+          category_id: m.category_id ? String(m.category_id) : p.category_id,
+        }))
+      }
+    }
+  }
+
   const mutation = useMutation({
     mutationFn: () => {
       const payload = {
         ...form,
+        asset_model_id: form.asset_model_id ? Number(form.asset_model_id) : null,
         status_id: Number(form.status_id),
         category_id: form.category_id ? Number(form.category_id) : null,
         location_id: form.location_id ? Number(form.location_id) : null,
@@ -69,6 +91,29 @@ function AssetForm({ asset, onClose, statuses, categories, locations }: {
   return (
     <form onSubmit={(e) => { e.preventDefault(); mutation.mutate() }}>
       <div className="grid grid-cols-2 gap-4">
+        {models.length > 0 && (
+          <div className="col-span-2">
+            <label className={labelCls}>Asset model</label>
+            <select className={inputCls} value={form.asset_model_id} onChange={handleModelChange}>
+              <option value="">— Select a model (optional) —</option>
+              {Object.entries(
+                models.reduce<Record<string, AssetModel[]>>((acc, m) => {
+                  const g = m.manufacturer || 'Other'
+                  if (!acc[g]) acc[g] = []
+                  acc[g].push(m)
+                  return acc
+                }, {})
+              ).sort(([a], [b]) => a.localeCompare(b)).map(([mfr, items]) => (
+                <optgroup key={mfr} label={mfr}>
+                  {items.map(m => <option key={m.id} value={m.id}>{m.name}</option>)}
+                </optgroup>
+              ))}
+            </select>
+            {form.asset_model_id && (
+              <p className="text-xs text-neutral-400 mt-1">Make, model, and category auto-filled from model definition.</p>
+            )}
+          </div>
+        )}
         <div className="col-span-2">
           <label className={labelCls}>Name *</label>
           <input required className={inputCls} value={form.name} onChange={set('name')} placeholder="MacBook Pro 14" />
@@ -374,9 +419,11 @@ export default function Assets() {
                     <Link to={`/assets/${asset.id}`} className="font-semibold text-sm text-neutral-900 hover:text-sg-forest transition-colors">
                       {asset.name}
                     </Link>
-                    {(asset.make || asset.model) && (
+                    {asset.asset_model ? (
+                      <div className="text-xs text-neutral-400">{[asset.asset_model.manufacturer, asset.asset_model.name].filter(Boolean).join(' · ')}</div>
+                    ) : (asset.make || asset.model) ? (
                       <div className="text-xs text-neutral-400">{[asset.make, asset.model].filter(Boolean).join(' ')}</div>
-                    )}
+                    ) : null}
                   </td>
                   <td className="px-3 py-3">
                     {asset.asset_tag && <div className="text-xs font-mono text-neutral-600">{asset.asset_tag}</div>}

@@ -10,6 +10,7 @@ class Asset(SQLModel, table=True):
     name: str
     asset_tag: str = Field(unique=True, index=True)
     serial: Optional[str] = Field(default=None, index=True)
+    asset_model_id: Optional[int] = Field(default=None, foreign_key="asset_models.id")
     make: Optional[str] = None
     model: Optional[str] = None
     model_number: Optional[str] = None

@@ -11,6 +11,7 @@ from app.routers import (
     categories,
     statuses,
     locations,
+    models,
     search,
     dashboard,
     import_export,
@@ -49,6 +50,7 @@ app.include_router(people.router, prefix="/api")
 app.include_router(categories.router, prefix="/api")
 app.include_router(statuses.router, prefix="/api")
 app.include_router(locations.router, prefix="/api")
+app.include_router(models.router, prefix="/api")
 app.include_router(search.router, prefix="/api")
 app.include_router(dashboard.router, prefix="/api")
 app.include_router(users.router, prefix="/api")
