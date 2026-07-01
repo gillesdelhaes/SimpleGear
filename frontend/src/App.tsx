@@ -31,7 +31,7 @@ export default function App() {
   useEffect(() => {
     if (location.pathname === '/setup') { setSetupChecked(true); return }
     api.get('/setup/status').then((r) => {
-      if (!r.data.completed) navigate('/setup', { replace: true })
+      if (!r.data.complete) navigate('/setup', { replace: true })
       else setSetupChecked(true)
     }).catch(() => setSetupChecked(true))
   }, [])

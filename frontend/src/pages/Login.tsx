@@ -8,7 +8,7 @@ export default function Login() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [loading, setLoading] = useState(false)
-  const { setToken } = useAuth()
+  const { login } = useAuth()
   const navigate = useNavigate()
   const location = useLocation()
   const { showToast } = useToast()
@@ -20,7 +20,7 @@ export default function Login() {
     setLoading(true)
     try {
       const { data } = await api.post('/auth/login', { email, password })
-      setToken(data.access_token)
+      login(data.access_token)
       navigate(from, { replace: true })
     } catch (err: any) {
       showToast(err.response?.data?.detail || 'Invalid credentials', 'error')

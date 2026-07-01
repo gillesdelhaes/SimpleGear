@@ -68,8 +68,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     localStorage.setItem('sg_token', newToken)
     setToken(newToken)
     setUser(decoded)
-    navigate('/')
-  }, [navigate])
+  }, [])
 
   const logout = useCallback(() => {
     localStorage.removeItem('sg_token')

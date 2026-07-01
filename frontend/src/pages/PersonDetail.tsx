@@ -89,8 +89,8 @@ export default function PersonDetail() {
                 <div className="flex-1 min-w-0">
                   <Link to={`/assets/${h.asset_id}`} className="text-sm font-medium text-neutral-800 hover:text-sg-forest">Asset #{h.asset_id}</Link>
                   <div className="text-xs text-neutral-400 mt-0.5">
-                    {new Date(h.assigned_at).toLocaleDateString()}
-                    {h.released_at && ` → ${new Date(h.released_at).toLocaleDateString()}`}
+                    {new Date(String(h.assigned_at)).toLocaleDateString()}
+                    {h.released_at && ` → ${new Date(String(h.released_at)).toLocaleDateString()}`}
                   </div>
                   {h.note && <div className="text-xs text-neutral-500 mt-1 font-mono bg-neutral-50 rounded px-2 py-0.5">{h.note}</div>}
                 </div>
