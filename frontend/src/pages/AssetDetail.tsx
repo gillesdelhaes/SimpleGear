@@ -357,7 +357,9 @@ export default function AssetDetail() {
             {asset.days_to_eol !== undefined && <EOLBadge days={asset.days_to_eol ?? null} />}
             <AuditBadge asset={asset} />
           </div>
-          {(asset.make || asset.model) && (
+          {asset.asset_model ? (
+            <p className="text-neutral-500">{[asset.asset_model.manufacturer, asset.asset_model.name, asset.asset_model.model_number].filter(Boolean).join(' · ')}</p>
+          ) : (asset.make || asset.model) && (
             <p className="text-neutral-500">{[asset.make, asset.model, asset.model_number].filter(Boolean).join(' · ')}</p>
           )}
         </div>
@@ -408,16 +410,22 @@ export default function AssetDetail() {
             <h3 className="text-xs font-bold uppercase tracking-widest text-neutral-400">Identification</h3>
             <Field label="Asset tag" value={asset.asset_tag} mono />
             <Field label="Serial number" value={asset.serial} mono />
-            {asset.asset_model && (
-              <div>
-                <div className="text-[10px] font-bold uppercase tracking-widest text-neutral-400 mb-0.5">Model</div>
-                <div className="text-sm text-neutral-800">{asset.asset_model.name}</div>
-                {asset.asset_model.manufacturer && <div className="text-xs text-neutral-400 mt-0.5">{asset.asset_model.manufacturer}</div>}
-              </div>
+            {asset.asset_model ? (
+              <>
+                <div>
+                  <div className="text-[10px] font-bold uppercase tracking-widest text-neutral-400 mb-0.5">Model</div>
+                  <div className="text-sm text-neutral-800">{asset.asset_model.name}</div>
+                  {asset.asset_model.manufacturer && <div className="text-xs text-neutral-400 mt-0.5">{asset.asset_model.manufacturer}</div>}
+                </div>
+                <Field label="Model number" value={asset.asset_model.model_number ?? asset.model_number} mono />
+              </>
+            ) : (
+              <>
+                <Field label="Make" value={asset.make} />
+                <Field label="Model" value={asset.model} />
+                <Field label="Model number" value={asset.model_number} mono />
+              </>
             )}
-            <Field label="Make" value={asset.make} />
-            <Field label="Model" value={asset.model} />
-            <Field label="Model number" value={asset.model_number} mono />
           </div>
           <div className="bg-white rounded-2xl border border-neutral-100 p-6 space-y-5">
             <h3 className="text-xs font-bold uppercase tracking-widest text-neutral-400">Classification</h3>
@@ -431,10 +439,18 @@ export default function AssetDetail() {
             <Field label="Purchase date" value={asset.purchase_date} />
             <Field label="Warranty expiry" value={asset.warranty_expiry} />
             <Field label="EOL date" value={asset.eol_date} />
-            {asset.days_to_eol !== undefined && asset.days_to_eol !== null && (
+            {asset.days_to_eol != null && (
               <div>
                 <div className="text-[10px] font-bold uppercase tracking-widest text-neutral-400 mb-0.5">EOL in</div>
-                <EOLBadge days={asset.days_to_eol} />
+                <div className={`text-sm font-semibold ${
+                  asset.days_to_eol < 0 ? 'text-neutral-900' : asset.days_to_eol < 30 ? 'text-red-600' : asset.days_to_eol < 90 ? 'text-amber-600' : 'text-sg-forest'
+                }`}>
+                  {asset.days_to_eol < 0
+                    ? `${Math.abs(asset.days_to_eol)} days past EOL`
+                    : asset.days_to_eol >= 365
+                      ? `${(asset.days_to_eol / 365).toFixed(1)} years (${asset.days_to_eol} days)`
+                      : `${asset.days_to_eol} days`}
+                </div>
               </div>
             )}
           </div>
