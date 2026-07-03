@@ -10,6 +10,7 @@ from app.models import Person, Asset, Assignment, Location
 from app.schemas.person import PersonCreate, PersonRead, PersonUpdate
 from app.schemas.asset import AssignmentRead
 from app.routers.assets import _build_asset_read
+from app.services.audit import diff_fields, write_audit
 
 router = APIRouter(prefix="/people", tags=["people"])
 
@@ -77,9 +78,14 @@ async def list_people(
 
 
 @router.post("", response_model=PersonRead, status_code=201)
-async def create_person(body: PersonCreate, session: AsyncSession = Depends(get_session), _=Depends(get_current_user)):
+async def create_person(body: PersonCreate, session: AsyncSession = Depends(get_session), current_user: dict = Depends(get_current_user)):
     p = Person(**body.model_dump(), created_at=datetime.utcnow())
     session.add(p)
+    await session.flush()
+    await write_audit(
+        session, actor=current_user, action="person.created",
+        entity_type="person", entity_id=p.id, entity_label=p.name,
+    )
     await session.commit()
     await session.refresh(p)
     return await _build_person_read(p, session)
@@ -95,24 +101,37 @@ async def get_person(person_id: int, session: AsyncSession = Depends(get_session
 
 
 @router.patch("/{person_id}", response_model=PersonRead)
-async def update_person(person_id: int, body: PersonUpdate, session: AsyncSession = Depends(get_session), _=Depends(get_current_user)):
+async def update_person(person_id: int, body: PersonUpdate, session: AsyncSession = Depends(get_session), current_user: dict = Depends(get_current_user)):
     result = await session.execute(select(Person).where(Person.id == person_id))
     p = result.scalar_one_or_none()
     if not p:
         raise HTTPException(status_code=404, detail="Person not found")
-    for k, v in body.model_dump(exclude_none=True).items():
+    updates = body.model_dump(exclude_none=True)
+    before = {k: getattr(p, k) for k in updates}
+    for k, v in updates.items():
         setattr(p, k, v)
+    changes = diff_fields(before, updates)
+    if changes:
+        await write_audit(
+            session, actor=current_user, action="person.updated",
+            entity_type="person", entity_id=p.id, entity_label=p.name,
+            payload={"changes": changes},
+        )
     await session.commit()
     await session.refresh(p)
     return await _build_person_read(p, session)
 
 
 @router.delete("/{person_id}", status_code=204)
-async def delete_person(person_id: int, session: AsyncSession = Depends(get_session), _=Depends(require_admin)):
+async def delete_person(person_id: int, session: AsyncSession = Depends(get_session), current_user: dict = Depends(require_admin)):
     result = await session.execute(select(Person).where(Person.id == person_id))
     p = result.scalar_one_or_none()
     if not p:
         raise HTTPException(status_code=404, detail="Person not found")
+    await write_audit(
+        session, actor=current_user, action="person.deleted",
+        entity_type="person", entity_id=p.id, entity_label=p.name,
+    )
     await session.delete(p)
     await session.commit()
 

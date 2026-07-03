@@ -4,6 +4,7 @@ import api from '../lib/axios'
 import type { LocationTree } from '../types'
 import Modal from '../components/shared/Modal'
 import ConfirmDialog from '../components/shared/ConfirmDialog'
+import CsvImport from '../components/shared/CsvImport'
 import { useToast } from '../components/shared/Toast'
 
 function LocationForm({ location, parentId, onClose, allLocations }: {
@@ -155,10 +156,18 @@ export default function Locations() {
           <h1 className="text-2xl font-bold text-neutral-900 tracking-tight">Locations</h1>
           <p className="text-sm text-neutral-500 mt-0.5">Organize assets by site, building, or room</p>
         </div>
-        <button onClick={() => { setAddParentId(undefined); setShowCreate(true) }} className="px-4 py-2 rounded-xl gradient-bg text-white text-sm font-semibold hover:opacity-90 flex items-center gap-1.5">
-          <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M12 4v16m8-8H4" /></svg>
-          Add location
-        </button>
+        <div className="flex items-center gap-2">
+          <CsvImport
+            importPath="/locations/import"
+            templatePath="/locations/import/template"
+            templateFilename="simplegear-locations-template.csv"
+            invalidateKeys={[['locations'], ['locations-flat']]}
+          />
+          <button onClick={() => { setAddParentId(undefined); setShowCreate(true) }} className="px-4 py-2 rounded-xl gradient-bg text-white text-sm font-semibold hover:opacity-90 flex items-center gap-1.5">
+            <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M12 4v16m8-8H4" /></svg>
+            Add location
+          </button>
+        </div>
       </div>
 
       <div className="bg-white rounded-2xl border border-neutral-100 shadow-sm p-3">

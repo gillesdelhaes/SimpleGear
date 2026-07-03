@@ -35,6 +35,10 @@ class AssetRead(BaseModel):
     eol_date: Optional[date]
     supplier: Optional[str]
     notes: Optional[str]
+    last_audit_at: Optional[datetime]
+    last_audit_by_name: Optional[str]
+    next_audit_date: Optional[date]
+    days_to_next_audit: Optional[int]
     created_at: Optional[datetime]
     updated_at: Optional[datetime]
     status: StatusRead
@@ -47,7 +51,7 @@ class AssetRead(BaseModel):
 
 class AssetCreate(BaseModel):
     name: str
-    asset_tag: str
+    asset_tag: Optional[str] = None  # blank = auto-generated from the configured prefix
     serial: Optional[str] = None
     asset_model_id: Optional[int] = None
     make: Optional[str] = None
@@ -95,9 +99,15 @@ class ReleaseRequest(BaseModel):
     new_status_id: Optional[int] = None
 
 
+class AuditRequest(BaseModel):
+    note: Optional[str] = None
+    location_id: Optional[int] = None  # confirm/correct the asset's location during audit
+    next_audit_date: Optional[date] = None  # override the default interval
+
+
 class BulkRequest(BaseModel):
     ids: list[int]
-    action: str  # assign | release | status | location | delete
+    action: str  # assign | release | status | location | delete | audit
     person_id: Optional[int] = None
     status_id: Optional[int] = None
     location_id: Optional[int] = None

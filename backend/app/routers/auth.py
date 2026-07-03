@@ -11,6 +11,7 @@ from app.auth.jwt import create_access_token
 from app.database import get_session
 from app.models import SystemUser
 from app.schemas.auth import LoginRequest, TokenResponse, UserRead
+from app.services.audit import write_audit
 from app.services.passwords import verify_password
 
 router = APIRouter(prefix="/auth", tags=["auth"])
@@ -60,6 +61,15 @@ async def login(
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Account is disabled")
 
     user.last_login_at = datetime.now(timezone.utc).replace(tzinfo=None)
+    await write_audit(
+        session,
+        actor={"id": user.id, "name": user.name, "email": user.email},
+        action="user.login",
+        entity_type="user",
+        entity_id=user.id,
+        entity_label=user.email,
+        payload={"ip": _client_ip(request)},
+    )
     await session.commit()
 
     return TokenResponse(

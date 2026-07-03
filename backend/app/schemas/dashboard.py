@@ -21,12 +21,14 @@ class DashboardStats(BaseModel):
     assigned_count: int
     unassigned_count: int
     total_value: Optional[float]
+    audits_overdue: int
+    audits_never: int
     by_status: list[StatusCount]
     by_category: list[CategoryCount]
 
 
 class Alert(BaseModel):
-    type: Literal["eol", "warranty"]
+    type: Literal["eol", "warranty", "audit"]
     asset_id: int
     asset_name: str
     asset_tag: str

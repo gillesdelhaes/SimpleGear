@@ -84,11 +84,35 @@ def upgrade() -> None:
     )
 
     op.create_table(
+        "asset_models",
+        sa.Column("id", sa.Integer(), primary_key=True, autoincrement=True),
+        sa.Column("name", sa.Text(), nullable=False),
+        sa.Column("manufacturer", sa.Text(), nullable=True),
+        sa.Column("model_number", sa.Text(), nullable=True),
+        sa.Column(
+            "category_id",
+            sa.Integer(),
+            sa.ForeignKey("asset_categories.id", ondelete="SET NULL"),
+            nullable=True,
+        ),
+        sa.Column("eol_years", sa.Integer(), nullable=True),
+        sa.Column("notes", sa.Text(), nullable=True),
+    )
+    op.create_index("ix_asset_models_name", "asset_models", ["name"])
+    op.create_index("ix_asset_models_manufacturer", "asset_models", ["manufacturer"])
+
+    op.create_table(
         "assets",
         sa.Column("id", sa.Integer(), primary_key=True, autoincrement=True),
         sa.Column("name", sa.Text(), nullable=False),
         sa.Column("asset_tag", sa.Text(), nullable=False, unique=True),
         sa.Column("serial", sa.Text(), nullable=True),
+        sa.Column(
+            "asset_model_id",
+            sa.Integer(),
+            sa.ForeignKey("asset_models.id", ondelete="SET NULL"),
+            nullable=True,
+        ),
         sa.Column("make", sa.Text(), nullable=True),
         sa.Column("model", sa.Text(), nullable=True),
         sa.Column("model_number", sa.Text(), nullable=True),
@@ -123,6 +147,14 @@ def upgrade() -> None:
         sa.Column("eol_date", sa.Date(), nullable=True),
         sa.Column("supplier", sa.Text(), nullable=True),
         sa.Column("notes", sa.Text(), nullable=True),
+        sa.Column("last_audit_at", sa.DateTime(), nullable=True),
+        sa.Column(
+            "last_audit_by_id",
+            sa.Integer(),
+            sa.ForeignKey("system_users.id", ondelete="SET NULL"),
+            nullable=True,
+        ),
+        sa.Column("next_audit_date", sa.Date(), nullable=True),
         sa.Column("created_at", sa.DateTime(), server_default=sa.func.now(), nullable=True),
         sa.Column("updated_at", sa.DateTime(), server_default=sa.func.now(), nullable=True),
     )
@@ -130,6 +162,7 @@ def upgrade() -> None:
     op.create_index("ix_assets_serial", "assets", ["serial"])
     op.create_index("ix_assets_status_id", "assets", ["status_id"])
     op.create_index("ix_assets_assigned_to_id", "assets", ["assigned_to_id"])
+    op.create_index("ix_assets_next_audit_date", "assets", ["next_audit_date"])
 
     op.create_table(
         "assignments",
@@ -159,10 +192,62 @@ def upgrade() -> None:
     op.create_index("ix_assignments_asset_id", "assignments", ["asset_id"])
     op.create_index("ix_assignments_released_at", "assignments", ["released_at"])
 
+    op.create_table(
+        "audit_log",
+        sa.Column("id", sa.Integer(), primary_key=True, autoincrement=True),
+        sa.Column(
+            "actor_id",
+            sa.Integer(),
+            sa.ForeignKey("system_users.id", ondelete="SET NULL"),
+            nullable=True,
+        ),
+        sa.Column("actor_name", sa.Text(), nullable=True),
+        sa.Column("action", sa.Text(), nullable=False),
+        sa.Column("entity_type", sa.Text(), nullable=False),
+        sa.Column("entity_id", sa.Text(), nullable=True),
+        sa.Column("entity_label", sa.Text(), nullable=True),
+        sa.Column("payload", sa.JSON(), nullable=True),
+        sa.Column("created_at", sa.DateTime(), server_default=sa.func.now(), nullable=False),
+    )
+    op.create_index("ix_audit_log_actor_id", "audit_log", ["actor_id"])
+    op.create_index("ix_audit_log_action", "audit_log", ["action"])
+    op.create_index("ix_audit_log_entity_type", "audit_log", ["entity_type"])
+    op.create_index("ix_audit_log_entity_id", "audit_log", ["entity_id"])
+    op.create_index("ix_audit_log_created_at", "audit_log", ["created_at"])
+
+    op.create_table(
+        "asset_maintenances",
+        sa.Column("id", sa.Integer(), primary_key=True, autoincrement=True),
+        sa.Column(
+            "asset_id",
+            sa.Integer(),
+            sa.ForeignKey("assets.id", ondelete="CASCADE"),
+            nullable=False,
+        ),
+        sa.Column("maintenance_type", sa.Text(), nullable=False, server_default="repair"),
+        sa.Column("title", sa.Text(), nullable=False),
+        sa.Column("notes", sa.Text(), nullable=True),
+        sa.Column("start_date", sa.Date(), nullable=True),
+        sa.Column("completed_date", sa.Date(), nullable=True),
+        sa.Column("cost", sa.Numeric(10, 2), nullable=True),
+        sa.Column("provider", sa.Text(), nullable=True),
+        sa.Column(
+            "created_by_id",
+            sa.Integer(),
+            sa.ForeignKey("system_users.id", ondelete="SET NULL"),
+            nullable=True,
+        ),
+        sa.Column("created_at", sa.DateTime(), server_default=sa.func.now(), nullable=True),
+    )
+    op.create_index("ix_asset_maintenances_asset_id", "asset_maintenances", ["asset_id"])
+
 
 def downgrade() -> None:
+    op.drop_table("asset_maintenances")
+    op.drop_table("audit_log")
     op.drop_table("assignments")
     op.drop_table("assets")
+    op.drop_table("asset_models")
     op.drop_table("people")
     op.drop_table("locations")
     op.drop_table("asset_categories")

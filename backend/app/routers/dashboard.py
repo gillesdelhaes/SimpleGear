@@ -22,6 +22,14 @@ async def dashboard_stats(session: AsyncSession = Depends(get_session), _=Depend
     value_r = await session.execute(select(func.sum(Asset.purchase_price)))
     total_value = value_r.scalar_one()
 
+    today = date.today()
+    overdue_r = await session.execute(
+        select(func.count()).where(Asset.next_audit_date.isnot(None), Asset.next_audit_date < today)
+    )
+    audits_overdue = overdue_r.scalar_one()
+    never_r = await session.execute(select(func.count()).where(Asset.last_audit_at.is_(None)))
+    audits_never = never_r.scalar_one()
+
     statuses_r = await session.execute(select(AssetStatus).order_by(AssetStatus.sort_order))
     statuses = statuses_r.scalars().all()
 
@@ -46,6 +54,8 @@ async def dashboard_stats(session: AsyncSession = Depends(get_session), _=Depend
         assigned_count=assigned_count,
         unassigned_count=total - assigned_count,
         total_value=float(total_value) if total_value else None,
+        audits_overdue=audits_overdue,
+        audits_never=audits_never,
         by_status=by_status,
         by_category=by_category,
     )
@@ -81,6 +91,19 @@ async def dashboard_alerts(session: AsyncSession = Depends(get_session), _=Depen
             asset_tag=asset.asset_tag,
             date=str(asset.warranty_expiry),
             days_remaining=(asset.warranty_expiry - today).days,
+        ))
+
+    audit_r = await session.execute(
+        select(Asset).where(Asset.next_audit_date.isnot(None), Asset.next_audit_date < today).order_by(Asset.next_audit_date)
+    )
+    for asset in audit_r.scalars().all():
+        alerts.append(Alert(
+            type="audit",
+            asset_id=asset.id,
+            asset_name=asset.name,
+            asset_tag=asset.asset_tag,
+            date=str(asset.next_audit_date),
+            days_remaining=(asset.next_audit_date - today).days,
         ))
 
     alerts.sort(key=lambda a: a.days_remaining)

@@ -25,5 +25,8 @@ class Asset(SQLModel, table=True):
     eol_date: Optional[date] = None
     supplier: Optional[str] = None
     notes: Optional[str] = None
+    last_audit_at: Optional[datetime] = None
+    last_audit_by_id: Optional[int] = Field(default=None, foreign_key="system_users.id")
+    next_audit_date: Optional[date] = Field(default=None, index=True)
     created_at: Optional[datetime] = Field(default_factory=datetime.utcnow)
     updated_at: Optional[datetime] = Field(default_factory=datetime.utcnow)

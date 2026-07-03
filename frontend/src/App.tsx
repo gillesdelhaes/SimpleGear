@@ -12,7 +12,10 @@ import AssetDetail from './pages/AssetDetail'
 import People from './pages/People'
 import PersonDetail from './pages/PersonDetail'
 import Locations from './pages/Locations'
+import Models from './pages/Models'
 import Search from './pages/Search'
+import Reports from './pages/Reports'
+import AuditLog from './pages/AuditLog'
 import Settings from './pages/Settings'
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
@@ -30,10 +33,10 @@ export default function App() {
 
   useEffect(() => {
     if (location.pathname === '/setup') { setSetupChecked(true); return }
-    api.get('/setup/status').then((r) => {
-      if (!r.data.complete) navigate('/setup', { replace: true })
-      else setSetupChecked(true)
-    }).catch(() => setSetupChecked(true))
+    api.get('/setup/status')
+      .then((r) => { if (!r.data.complete) navigate('/setup', { replace: true }) })
+      .catch(() => {})
+      .finally(() => setSetupChecked(true))
   }, [])
 
   if (!setupChecked && location.pathname !== '/setup') {
@@ -57,8 +60,11 @@ export default function App() {
       <Route path="/assets/:id" element={<ProtectedRoute><AssetDetail /></ProtectedRoute>} />
       <Route path="/people" element={<ProtectedRoute><People /></ProtectedRoute>} />
       <Route path="/people/:id" element={<ProtectedRoute><PersonDetail /></ProtectedRoute>} />
+      <Route path="/models" element={<ProtectedRoute><Models /></ProtectedRoute>} />
       <Route path="/locations" element={<ProtectedRoute><Locations /></ProtectedRoute>} />
       <Route path="/search" element={<ProtectedRoute><Search /></ProtectedRoute>} />
+      <Route path="/reports" element={<ProtectedRoute><Reports /></ProtectedRoute>} />
+      <Route path="/audit-log" element={<ProtectedRoute><AuditLog /></ProtectedRoute>} />
       <Route path="/settings" element={<ProtectedRoute><Settings /></ProtectedRoute>} />
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>

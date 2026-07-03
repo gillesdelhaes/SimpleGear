@@ -11,6 +11,70 @@ import { useToast } from '../components/shared/Toast'
 
 const PER_PAGE = 50
 
+// ─── Configurable columns ──────────────────────────────────────────────────────
+
+interface ColumnDef {
+  key: string
+  label: string
+  sortKey?: string // server-side sort field; absent = not sortable
+  align?: 'right'
+  always?: boolean // cannot be hidden
+  render: (a: Asset) => React.ReactNode
+}
+
+const fmtDate = (d: string | null) => (d ? d : '—')
+const fmtMoney = (v: number | null) => (v != null ? `$${v.toFixed(2)}` : '—')
+
+const ALL_COLUMNS: ColumnDef[] = [
+  {
+    key: 'name', label: 'Asset', sortKey: 'name', always: true,
+    render: (a) => (
+      <>
+        <Link to={`/assets/${a.id}`} className="font-semibold text-sm text-neutral-900 hover:text-sg-forest transition-colors">
+          {a.name}
+        </Link>
+        {a.asset_model ? (
+          <div className="text-xs text-neutral-400">{[a.asset_model.manufacturer, a.asset_model.name].filter(Boolean).join(' · ')}</div>
+        ) : (a.make || a.model) ? (
+          <div className="text-xs text-neutral-400">{[a.make, a.model].filter(Boolean).join(' ')}</div>
+        ) : null}
+      </>
+    ),
+  },
+  { key: 'asset_tag', label: 'Tag', sortKey: 'asset_tag', render: (a) => <span className="text-xs font-mono text-neutral-600">{a.asset_tag || '—'}</span> },
+  { key: 'serial', label: 'Serial', sortKey: 'serial', render: (a) => <span className="text-xs font-mono text-neutral-400">{a.serial || '—'}</span> },
+  { key: 'status', label: 'Status', sortKey: 'status', render: (a) => (a.status ? <StatusBadge status={a.status} /> : '—') },
+  { key: 'category', label: 'Category', sortKey: 'category', render: (a) => <span className="text-xs text-neutral-600">{a.category?.name || '—'}</span> },
+  {
+    key: 'assigned_to', label: 'Assigned to', sortKey: 'assigned_to',
+    render: (a) => a.assigned_to
+      ? <Link to={`/people/${a.assigned_to.id}`} className="text-xs text-neutral-600 hover:text-sg-forest">{a.assigned_to.name}</Link>
+      : <span className="text-xs text-neutral-600">—</span>,
+  },
+  { key: 'location', label: 'Location', sortKey: 'location', render: (a) => <span className="text-xs text-neutral-600">{a.location?.name || '—'}</span> },
+  { key: 'supplier', label: 'Supplier', sortKey: 'supplier', render: (a) => <span className="text-xs text-neutral-600">{a.supplier || '—'}</span> },
+  { key: 'purchase_date', label: 'Purchased', sortKey: 'purchase_date', render: (a) => <span className="text-xs text-neutral-600">{fmtDate(a.purchase_date)}</span> },
+  { key: 'purchase_price', label: 'Price', sortKey: 'purchase_price', align: 'right', render: (a) => <span className="text-xs font-mono text-neutral-600">{fmtMoney(a.purchase_price)}</span> },
+  { key: 'warranty_expiry', label: 'Warranty until', sortKey: 'warranty_expiry', render: (a) => <span className="text-xs text-neutral-600">{fmtDate(a.warranty_expiry)}</span> },
+  { key: 'eol_date', label: 'EOL date', sortKey: 'eol_date', render: (a) => <span className="text-xs text-neutral-600">{fmtDate(a.eol_date)}</span> },
+  { key: 'eol', label: 'EOL', sortKey: 'eol_date', align: 'right', render: (a) => <EOLBadge days={a.days_to_eol ?? null} /> },
+  { key: 'next_audit_date', label: 'Next audit', sortKey: 'next_audit_date', render: (a) => <span className={`text-xs ${a.days_to_next_audit != null && a.days_to_next_audit < 0 ? 'text-red-500 font-semibold' : 'text-neutral-600'}`}>{fmtDate(a.next_audit_date)}</span> },
+  { key: 'last_audit_at', label: 'Last audit', sortKey: 'last_audit_at', render: (a) => <span className="text-xs text-neutral-600">{a.last_audit_at ? new Date(a.last_audit_at + 'Z').toLocaleDateString() : '—'}</span> },
+]
+
+const DEFAULT_COLUMNS = ['name', 'asset_tag', 'serial', 'status', 'category', 'assigned_to', 'location', 'eol']
+const COLUMNS_KEY = 'sg_asset_columns'
+
+function loadColumns(): string[] {
+  try {
+    const stored = JSON.parse(localStorage.getItem(COLUMNS_KEY) ?? '')
+    if (Array.isArray(stored) && stored.length > 0) {
+      return ALL_COLUMNS.map((c) => c.key).filter((k) => k === 'name' || stored.includes(k))
+    }
+  } catch { /* fall through */ }
+  return DEFAULT_COLUMNS
+}
+
 function AssetForm({ asset, onClose, statuses, categories, locations }: {
   asset?: Asset
   onClose: () => void
@@ -120,7 +184,7 @@ function AssetForm({ asset, onClose, statuses, categories, locations }: {
         </div>
         <div>
           <label className={labelCls}>Asset tag</label>
-          <input className={inputCls} value={form.asset_tag} onChange={set('asset_tag')} placeholder="GEAR-001" />
+          <input className={inputCls} value={form.asset_tag} onChange={set('asset_tag')} placeholder="Blank = auto (e.g. SG-0001)" />
         </div>
         <div>
           <label className={labelCls}>Serial number</label>
@@ -210,12 +274,39 @@ export default function Assets() {
   const [bulkAction, setBulkAction] = useState('')
   const [showBulkConfirm, setShowBulkConfirm] = useState(false)
   const fileRef = useRef<HTMLInputElement>(null)
+  const [visibleKeys, setVisibleKeys] = useState<string[]>(loadColumns)
+  const [colPickerOpen, setColPickerOpen] = useState(false)
+  const [sort, setSort] = useState<string | null>(null)
+  const [sortDir, setSortDir] = useState<'asc' | 'desc'>('asc')
+
+  const visibleColumns = ALL_COLUMNS.filter((c) => visibleKeys.includes(c.key))
+
+  const toggleColumn = (key: string) => {
+    setVisibleKeys((prev) => {
+      const next = prev.includes(key)
+        ? prev.filter((k) => k !== key)
+        : ALL_COLUMNS.map((c) => c.key).filter((k) => prev.includes(k) || k === key)
+      localStorage.setItem(COLUMNS_KEY, JSON.stringify(next))
+      return next
+    })
+  }
+
+  const handleSort = (sortKey: string) => {
+    if (sort === sortKey) {
+      setSortDir((d) => (d === 'asc' ? 'desc' : 'asc'))
+    } else {
+      setSort(sortKey)
+      setSortDir('asc')
+    }
+    setPage(1)
+  }
 
   const params = new URLSearchParams()
   if (search) params.set('q', search)
   if (filterStatus) params.set('status_id', filterStatus)
   if (filterCategory) params.set('category_id', filterCategory)
   if (filterLocation) params.set('location_id', filterLocation)
+  if (sort) { params.set('sort', sort); params.set('dir', sortDir) }
   params.set('page', String(page))
   params.set('per_page', String(PER_PAGE))
 
@@ -252,6 +343,8 @@ export default function Assets() {
     const ids = Array.from(selected)
     if (bulkAction === 'delete') {
       bulkMutation.mutate({ action: 'delete', ids })
+    } else if (bulkAction === 'audit') {
+      bulkMutation.mutate({ action: 'audit', ids })
     } else if (bulkAction.startsWith('status:')) {
       bulkMutation.mutate({ action: 'status', ids, status_id: parseInt(bulkAction.split(':')[1]) })
     } else if (bulkAction.startsWith('location:')) {
@@ -282,6 +375,13 @@ export default function Assets() {
     const { data } = await api.get('/assets/export', { responseType: 'blob' })
     const url = URL.createObjectURL(data)
     const a = document.createElement('a'); a.href = url; a.download = 'assets.csv'; a.click()
+    URL.revokeObjectURL(url)
+  }
+
+  const handleTemplate = async () => {
+    const { data } = await api.get('/assets/import/template', { responseType: 'blob' })
+    const url = URL.createObjectURL(data)
+    const a = document.createElement('a'); a.href = url; a.download = 'simplegear-assets-template.csv'; a.click()
     URL.revokeObjectURL(url)
   }
 
@@ -337,6 +437,10 @@ export default function Assets() {
               className="w-full border border-neutral-200 rounded-xl pl-9 pr-3 py-2 text-sm outline-none focus:border-sg-lime focus:ring-2 focus:ring-sg-lime/10"
             />
           </div>
+          <button onClick={handleTemplate} title="Download a CSV template with the expected columns" className="px-3 py-2 rounded-xl border border-neutral-200 text-sm font-semibold text-neutral-700 hover:bg-neutral-50 flex items-center gap-1.5">
+            <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
+            Template
+          </button>
           <input ref={fileRef} type="file" accept=".csv" className="hidden" onChange={handleImport} />
           <button onClick={() => fileRef.current?.click()} disabled={importing} className="px-3 py-2 rounded-xl border border-neutral-200 text-sm font-semibold text-neutral-700 hover:bg-neutral-50 flex items-center gap-1.5">
             <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" /></svg>
@@ -363,6 +467,7 @@ export default function Assets() {
               className="border border-neutral-200 rounded-lg px-3 py-1.5 text-sm outline-none"
             >
               <option value="">Bulk action...</option>
+              <option value="audit">Mark as audited</option>
               <optgroup label="Set status">
                 {statuses.map((s) => <option key={s.id} value={`status:${s.id}`}>→ {s.name}</option>)}
               </optgroup>
@@ -388,25 +493,79 @@ export default function Assets() {
                 <th className="w-10 px-4 py-3">
                   <input type="checkbox" checked={assets.length > 0 && selected.size === assets.length} onChange={toggleAll} className="rounded" />
                 </th>
-                <th className="text-left px-3 py-3 text-xs font-bold text-neutral-500 uppercase tracking-wider">Asset</th>
-                <th className="text-left px-3 py-3 text-xs font-bold text-neutral-500 uppercase tracking-wider">Tag / Serial</th>
-                <th className="text-left px-3 py-3 text-xs font-bold text-neutral-500 uppercase tracking-wider">Status</th>
-                <th className="text-left px-3 py-3 text-xs font-bold text-neutral-500 uppercase tracking-wider">Category</th>
-                <th className="text-left px-3 py-3 text-xs font-bold text-neutral-500 uppercase tracking-wider">Assigned to</th>
-                <th className="text-left px-3 py-3 text-xs font-bold text-neutral-500 uppercase tracking-wider">Location</th>
-                <th className="w-20 px-3 py-3 text-xs font-bold text-neutral-500 uppercase tracking-wider text-right">EOL</th>
+                {visibleColumns.map((col) => (
+                  <th
+                    key={col.key}
+                    onClick={col.sortKey ? () => handleSort(col.sortKey!) : undefined}
+                    className={`px-3 py-3 text-xs font-bold uppercase tracking-wider select-none ${col.align === 'right' ? 'text-right' : 'text-left'} ${
+                      col.sortKey
+                        ? `cursor-pointer transition-colors ${sort === col.sortKey ? 'text-sg-forest' : 'text-neutral-500 hover:text-neutral-800'}`
+                        : 'text-neutral-500'
+                    }`}
+                  >
+                    <span className="inline-flex items-center gap-1">
+                      {col.label}
+                      {col.sortKey && sort === col.sortKey && (
+                        <svg width="10" height="10" viewBox="0 0 10 10" fill="currentColor" className={sortDir === 'desc' ? 'rotate-180' : ''}>
+                          <path d="M5 2l3.5 4h-7L5 2z" />
+                        </svg>
+                      )}
+                    </span>
+                  </th>
+                ))}
+                <th className="w-10 px-2 py-3 text-right relative">
+                  <button
+                    onClick={() => setColPickerOpen((o) => !o)}
+                    title="Choose columns"
+                    className={`p-1.5 rounded-lg transition-colors ${colPickerOpen ? 'bg-neutral-100 text-neutral-700' : 'text-neutral-400 hover:text-neutral-700 hover:bg-neutral-100'}`}
+                  >
+                    <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 4v16M15 4v16M4 6a2 2 0 012-2h12a2 2 0 012 2v12a2 2 0 01-2 2H6a2 2 0 01-2-2V6z" />
+                    </svg>
+                  </button>
+                  {colPickerOpen && (
+                    <>
+                      <div className="fixed inset-0 z-20" onClick={() => setColPickerOpen(false)} />
+                      <div className="absolute right-2 top-full mt-1 w-52 bg-white border border-neutral-200 rounded-xl shadow-xl z-30 py-2 text-left normal-case tracking-normal">
+                        <div className="px-3 pb-1.5 text-[10px] font-bold uppercase tracking-widest text-neutral-400">Columns</div>
+                        <div className="max-h-72 overflow-y-auto scrollbar-thin">
+                          {ALL_COLUMNS.map((col) => (
+                            <label key={col.key} className={`flex items-center gap-2.5 px-3 py-1.5 text-sm font-normal text-neutral-700 ${col.always ? 'opacity-50' : 'cursor-pointer hover:bg-neutral-50'}`}>
+                              <input
+                                type="checkbox"
+                                className="rounded"
+                                disabled={col.always}
+                                checked={visibleKeys.includes(col.key)}
+                                onChange={() => toggleColumn(col.key)}
+                              />
+                              {col.label}
+                            </label>
+                          ))}
+                        </div>
+                        <div className="border-t border-neutral-100 mt-1 pt-1.5 px-3">
+                          <button
+                            onClick={() => { setVisibleKeys(DEFAULT_COLUMNS); localStorage.removeItem(COLUMNS_KEY) }}
+                            className="text-xs font-semibold text-neutral-400 hover:text-sg-forest"
+                          >
+                            Reset to default
+                          </button>
+                        </div>
+                      </div>
+                    </>
+                  )}
+                </th>
               </tr>
             </thead>
             <tbody className="divide-y divide-neutral-50">
               {isLoading ? (
                 Array.from({ length: 10 }).map((_, i) => (
                   <tr key={i} className="animate-pulse">
-                    <td colSpan={8} className="px-4 py-3"><div className="h-4 bg-neutral-100 rounded" /></td>
+                    <td colSpan={visibleColumns.length + 2} className="px-4 py-3"><div className="h-4 bg-neutral-100 rounded" /></td>
                   </tr>
                 ))
               ) : assets.length === 0 ? (
                 <tr>
-                  <td colSpan={8} className="px-4 py-16 text-center text-sm text-neutral-400">
+                  <td colSpan={visibleColumns.length + 2} className="px-4 py-16 text-center text-sm text-neutral-400">
                     {search || filterStatus || filterCategory ? 'No assets match your filters' : 'No assets yet — create one or import a CSV'}
                   </td>
                 </tr>
@@ -415,33 +574,12 @@ export default function Assets() {
                   <td className="px-4 py-3">
                     <input type="checkbox" checked={selected.has(asset.id)} onChange={() => toggleOne(asset.id)} className="rounded" />
                   </td>
-                  <td className="px-3 py-3">
-                    <Link to={`/assets/${asset.id}`} className="font-semibold text-sm text-neutral-900 hover:text-sg-forest transition-colors">
-                      {asset.name}
-                    </Link>
-                    {asset.asset_model ? (
-                      <div className="text-xs text-neutral-400">{[asset.asset_model.manufacturer, asset.asset_model.name].filter(Boolean).join(' · ')}</div>
-                    ) : (asset.make || asset.model) ? (
-                      <div className="text-xs text-neutral-400">{[asset.make, asset.model].filter(Boolean).join(' ')}</div>
-                    ) : null}
-                  </td>
-                  <td className="px-3 py-3">
-                    {asset.asset_tag && <div className="text-xs font-mono text-neutral-600">{asset.asset_tag}</div>}
-                    {asset.serial && <div className="text-xs font-mono text-neutral-400">{asset.serial}</div>}
-                  </td>
-                  <td className="px-3 py-3">
-                    {asset.status && <StatusBadge status={asset.status} />}
-                  </td>
-                  <td className="px-3 py-3 text-xs text-neutral-600">{asset.category?.name || '—'}</td>
-                  <td className="px-3 py-3 text-xs text-neutral-600">
-                    {asset.assigned_to
-                      ? <Link to={`/people/${asset.assigned_to.id}`} className="hover:text-sg-forest">{asset.assigned_to.name}</Link>
-                      : '—'}
-                  </td>
-                  <td className="px-3 py-3 text-xs text-neutral-600">{asset.location?.name || '—'}</td>
-                  <td className="px-3 py-3 text-right">
-                    <EOLBadge days={asset.days_to_eol ?? null} />
-                  </td>
+                  {visibleColumns.map((col) => (
+                    <td key={col.key} className={`px-3 py-3 ${col.align === 'right' ? 'text-right' : ''}`}>
+                      {col.render(asset)}
+                    </td>
+                  ))}
+                  <td />
                 </tr>
               ))}
             </tbody>

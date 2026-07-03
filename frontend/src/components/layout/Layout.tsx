@@ -64,6 +64,35 @@ function IconSettings() {
   )
 }
 
+function IconModels() {
+  return (
+    <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+      <rect x="2" y="2" width="6" height="6" rx="1.2" />
+      <rect x="10" y="2" width="6" height="6" rx="1.2" />
+      <rect x="2" y="10" width="6" height="6" rx="1.2" />
+      <path d="M13 10.5v5M10.5 13h5" />
+    </svg>
+  )
+}
+
+function IconReports() {
+  return (
+    <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+      <rect x="2" y="2" width="14" height="14" rx="2" />
+      <path d="M5.5 12V9M9 12V7M12.5 12V5" />
+    </svg>
+  )
+}
+
+function IconAudit() {
+  return (
+    <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M5 2h8a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2z" />
+      <path d="M6.5 6.5h5M6.5 9.5h5M6.5 12.5h3" />
+    </svg>
+  )
+}
+
 function IconChevronLeft() {
   return (
     <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
@@ -94,12 +123,15 @@ function IconLogout() {
 const NAV_MAIN = [
   { to: '/', label: 'Dashboard', icon: <IconDashboard />, end: true },
   { to: '/assets', label: 'Assets', icon: <IconAssets />, end: false },
+  { to: '/models', label: 'Models', icon: <IconModels />, end: false },
   { to: '/people', label: 'People', icon: <IconPeople />, end: false },
   { to: '/search', label: 'Search', icon: <IconSearch />, end: false },
   { to: '/locations', label: 'Locations', icon: <IconLocation />, end: false },
+  { to: '/reports', label: 'Reports', icon: <IconReports />, end: false },
 ]
 
 const NAV_ADMIN = [
+  { to: '/audit-log', label: 'Audit Log', icon: <IconAudit />, end: false },
   { to: '/settings', label: 'Settings', icon: <IconSettings />, end: false },
 ]
 
@@ -345,8 +377,11 @@ function usePageTitle() {
   if (pathname === '/assets') return 'Assets'
   if (pathname.startsWith('/people') && pathname !== '/people') return 'Person Detail'
   if (pathname === '/people') return 'People'
+  if (pathname === '/models') return 'Asset Models'
   if (pathname === '/locations') return 'Locations'
   if (pathname === '/search') return 'Search'
+  if (pathname === '/reports') return 'Reports'
+  if (pathname === '/audit-log') return 'Audit Log'
   if (pathname === '/settings') return 'Settings'
   return 'SimpleGear'
 }

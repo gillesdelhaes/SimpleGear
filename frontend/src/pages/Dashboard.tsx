@@ -16,15 +16,18 @@ function StatCard({ label, value, sub, color }: { label: string; value: number; 
 }
 
 function AlertRow({ alert }: { alert: Alert }) {
+  const overdue = alert.days_remaining < 0
   const message = alert.type === 'eol'
-    ? `End of life ${alert.days_remaining < 0 ? `${Math.abs(alert.days_remaining)}d ago` : `in ${alert.days_remaining}d`}`
-    : `Warranty expires ${alert.days_remaining < 0 ? `${Math.abs(alert.days_remaining)}d ago` : `in ${alert.days_remaining}d`}`
+    ? `End of life ${overdue ? `${Math.abs(alert.days_remaining)}d ago` : `in ${alert.days_remaining}d`}`
+    : alert.type === 'warranty'
+      ? `Warranty expires ${overdue ? `${Math.abs(alert.days_remaining)}d ago` : `in ${alert.days_remaining}d`}`
+      : `Audit ${overdue ? `overdue by ${Math.abs(alert.days_remaining)}d` : `due in ${alert.days_remaining}d`}`
   return (
     <Link
       to={`/assets/${alert.asset_id}`}
       className="flex items-center gap-3 px-4 py-3 hover:bg-neutral-50 rounded-xl transition-colors group"
     >
-      <div className={`w-2 h-2 rounded-full flex-shrink-0 ${alert.type === 'eol' ? 'bg-red-400' : 'bg-amber-400'}`} />
+      <div className={`w-2 h-2 rounded-full flex-shrink-0 ${alert.type === 'eol' ? 'bg-red-400' : alert.type === 'warranty' ? 'bg-amber-400' : 'bg-sg-lime'}`} />
       <div className="flex-1 min-w-0">
         <div className="text-sm font-medium text-neutral-900 truncate group-hover:text-sg-forest transition-colors">{alert.asset_name}</div>
         <div className="text-xs text-neutral-500">{message}</div>
@@ -98,10 +101,16 @@ export default function Dashboard() {
       </div>
 
       {/* Stats */}
-      <div className="grid grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
         <StatCard label="Total assets" value={stats?.total ?? 0} />
         <StatCard label="Assigned" value={stats?.assigned_count ?? 0} color="#15803D" />
         <StatCard label="Available" value={stats?.unassigned_count ?? 0} color="#84CC16" />
+        <StatCard
+          label="Audits needed"
+          value={(stats?.audits_overdue ?? 0) + (stats?.audits_never ?? 0)}
+          sub={stats ? `${stats.audits_overdue} overdue · ${stats.audits_never} never audited` : undefined}
+          color={(stats?.audits_overdue ?? 0) > 0 ? '#EF4444' : (stats?.audits_never ?? 0) > 0 ? '#F59E0B' : '#15803D'}
+        />
       </div>
 
       {/* Category breakdown */}

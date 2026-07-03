@@ -16,6 +16,10 @@ from app.routers import (
     dashboard,
     import_export,
     users,
+    activity,
+    maintenance,
+    reports,
+    app_settings,
 )
 
 
@@ -54,3 +58,7 @@ app.include_router(models.router, prefix="/api")
 app.include_router(search.router, prefix="/api")
 app.include_router(dashboard.router, prefix="/api")
 app.include_router(users.router, prefix="/api")
+app.include_router(activity.router, prefix="/api")
+app.include_router(maintenance.router, prefix="/api")
+app.include_router(reports.router, prefix="/api")
+app.include_router(app_settings.router, prefix="/api")

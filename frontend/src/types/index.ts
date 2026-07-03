@@ -14,6 +14,8 @@ export interface AssetModel {
   category_id: number | null
   eol_years: number | null
   notes: string | null
+  asset_count: number
+  assigned_count: number
 }
 
 export interface AssetCategory {
@@ -78,6 +80,10 @@ export interface Asset {
   eol_date: string | null
   supplier: string | null
   notes: string | null
+  last_audit_at: string | null
+  last_audit_by_name: string | null
+  next_audit_date: string | null
+  days_to_next_audit: number | null
   created_at: string | null
   updated_at: string | null
   status: AssetStatus
@@ -139,12 +145,14 @@ export interface DashboardStats {
   assigned_count: number
   unassigned_count: number
   total_value: number | null
+  audits_overdue: number
+  audits_never: number
   by_status: Array<{ status_id: number; name: string; color: string; count: number }>
   by_category: Array<{ category_id: number; name: string; count: number }>
 }
 
 export interface Alert {
-  type: 'eol' | 'warranty'
+  type: 'eol' | 'warranty' | 'audit'
   asset_id: number
   asset_name: string
   asset_tag: string
@@ -169,6 +177,61 @@ export interface AuthUser {
   name: string
   role: 'admin' | 'viewer'
   is_active?: boolean
+}
+
+export interface AuditLogEntry {
+  id: number
+  actor_id: number | null
+  actor_name: string | null
+  action: string
+  entity_type: string
+  entity_id: string | null
+  entity_label: string | null
+  payload: Record<string, unknown> | null
+  created_at: string
+}
+
+export interface AuditLogPage {
+  items: AuditLogEntry[]
+  total: number
+  pages: number
+}
+
+export interface Maintenance {
+  id: number
+  asset_id: number
+  maintenance_type: string
+  title: string
+  notes: string | null
+  start_date: string | null
+  completed_date: string | null
+  cost: number | null
+  provider: string | null
+  created_by_id: number | null
+  created_by_name: string | null
+  created_at: string | null
+}
+
+export interface ReportSummary {
+  total_assets: number
+  total_value: number
+  audit: {
+    total: number
+    audited_ok: number
+    overdue: number
+    never_audited: number
+    compliance_pct: number
+  }
+  warranty_expiring_90d: number
+  eol_within_90d: number
+  maintenance_open: number
+  maintenance_cost_total: number
+  by_location: Array<{ location_id: number | null; name: string; count: number; value: number }>
+}
+
+export interface AppSettings {
+  audit_interval_months: number
+  asset_tag_prefix: string
 }
 
 export interface ImportResult {

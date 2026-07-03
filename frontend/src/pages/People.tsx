@@ -5,6 +5,7 @@ import api from '../lib/axios'
 import type { Person, Location } from '../types'
 import Modal from '../components/shared/Modal'
 import ConfirmDialog from '../components/shared/ConfirmDialog'
+import CsvImport from '../components/shared/CsvImport'
 import { useToast } from '../components/shared/Toast'
 
 function PersonForm({ person, onClose, locations }: { person?: Person; onClose: () => void; locations: Location[] }) {
@@ -126,10 +127,30 @@ export default function People() {
           <h1 className="text-2xl font-bold text-neutral-900 tracking-tight">People</h1>
           <p className="text-sm text-neutral-500 mt-0.5">Device users and contacts</p>
         </div>
-        <button onClick={() => setShowCreate(true)} className="px-4 py-2 rounded-xl gradient-bg text-white text-sm font-semibold hover:opacity-90 flex items-center gap-1.5">
-          <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M12 4v16m8-8H4" /></svg>
-          Add person
-        </button>
+        <div className="flex items-center gap-2">
+          <CsvImport
+            importPath="/people/import"
+            templatePath="/people/import/template"
+            templateFilename="simplegear-people-template.csv"
+            invalidateKeys={[['people'], ['people-list'], ['locations']]}
+          />
+          <button
+            onClick={async () => {
+              const { data } = await api.get('/people/export', { responseType: 'blob' })
+              const url = URL.createObjectURL(data)
+              const a = document.createElement('a'); a.href = url; a.download = 'simplegear-people.csv'; a.click()
+              URL.revokeObjectURL(url)
+            }}
+            className="px-3 py-2 rounded-xl border border-neutral-200 text-sm font-semibold text-neutral-700 hover:bg-neutral-50 flex items-center gap-1.5"
+          >
+            <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" /></svg>
+            Export
+          </button>
+          <button onClick={() => setShowCreate(true)} className="px-4 py-2 rounded-xl gradient-bg text-white text-sm font-semibold hover:opacity-90 flex items-center gap-1.5">
+            <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M12 4v16m8-8H4" /></svg>
+            Add person
+          </button>
+        </div>
       </div>
 
       <div className="mb-4 relative">

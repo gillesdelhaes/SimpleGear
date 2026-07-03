@@ -7,6 +7,8 @@ from app.models.person import Person
 from app.models.asset_model import AssetModel
 from app.models.asset import Asset
 from app.models.assignment import Assignment
+from app.models.audit_log import AuditLog
+from app.models.maintenance import AssetMaintenance
 
 __all__ = [
     "AppSetting",
@@ -18,4 +20,6 @@ __all__ = [
     "AssetModel",
     "Asset",
     "Assignment",
+    "AuditLog",
+    "AssetMaintenance",
 ]

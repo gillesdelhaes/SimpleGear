@@ -10,6 +10,8 @@ class AssetModelRead(BaseModel):
     category_id: Optional[int]
     eol_years: Optional[int]
     notes: Optional[str]
+    asset_count: int = 0
+    assigned_count: int = 0
 
 
 class AssetModelCreate(BaseModel):
