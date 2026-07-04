@@ -25,7 +25,7 @@ function IconDownload() {
 function ExportCard({ title, description, path, filename }: { title: string; description: string; path: string; filename: string }) {
   const { showToast } = useToast()
   return (
-    <div className="bg-white rounded-2xl border border-neutral-100 p-5 flex items-start justify-between gap-4">
+    <div className="bg-white rounded-[14px] border border-neutral-100 p-5 flex items-start justify-between gap-4">
       <div>
         <div className="text-sm font-semibold text-neutral-800">{title}</div>
         <div className="text-xs text-neutral-500 mt-1 leading-relaxed">{description}</div>
@@ -73,14 +73,9 @@ export default function Reports() {
   const audit = summary?.audit
 
   return (
-    <div className="p-8 max-w-5xl">
-      <div className="mb-8">
-        <h1 className="text-2xl font-bold text-neutral-900 tracking-tight">Reports</h1>
-        <p className="text-sm text-neutral-500 mt-0.5">Compliance evidence and inventory exports</p>
-      </div>
-
+    <div className="px-7 pt-7 pb-12 max-w-5xl">
       {/* Audit compliance */}
-      <div className="bg-white rounded-2xl border border-neutral-100 shadow-sm p-6 mb-6">
+      <div className="bg-white rounded-[14px] border border-neutral-100 shadow-sm p-6 mb-6">
         <h2 className="text-sm font-bold text-neutral-700 uppercase tracking-wider mb-5">Audit Compliance</h2>
         <div className="flex items-center gap-8 flex-wrap">
           <ComplianceRing pct={audit?.compliance_pct ?? 0} />
@@ -113,21 +108,21 @@ export default function Reports() {
 
       {/* Key figures */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-        <div className="bg-white rounded-2xl p-5 border border-neutral-100 shadow-sm">
+        <div className="bg-white rounded-[14px] p-5 border border-neutral-100 shadow-sm">
           <div className="text-2xl font-bold tracking-tight text-neutral-900">
             {summary ? `$${summary.total_value.toLocaleString(undefined, { maximumFractionDigits: 0 })}` : '—'}
           </div>
           <div className="text-xs font-semibold text-neutral-600 mt-1">Inventory value</div>
         </div>
-        <div className="bg-white rounded-2xl p-5 border border-neutral-100 shadow-sm">
+        <div className="bg-white rounded-[14px] p-5 border border-neutral-100 shadow-sm">
           <div className="text-2xl font-bold tracking-tight text-amber-500">{summary?.warranty_expiring_90d ?? 0}</div>
           <div className="text-xs font-semibold text-neutral-600 mt-1">Warranties expiring ≤ 90d</div>
         </div>
-        <div className="bg-white rounded-2xl p-5 border border-neutral-100 shadow-sm">
+        <div className="bg-white rounded-[14px] p-5 border border-neutral-100 shadow-sm">
           <div className="text-2xl font-bold tracking-tight text-red-500">{summary?.eol_within_90d ?? 0}</div>
           <div className="text-xs font-semibold text-neutral-600 mt-1">EOL within 90d</div>
         </div>
-        <div className="bg-white rounded-2xl p-5 border border-neutral-100 shadow-sm">
+        <div className="bg-white rounded-[14px] p-5 border border-neutral-100 shadow-sm">
           <div className="text-2xl font-bold tracking-tight text-neutral-900">{summary?.maintenance_open ?? 0}</div>
           <div className="text-xs font-semibold text-neutral-600 mt-1">Open maintenance</div>
         </div>
@@ -135,7 +130,7 @@ export default function Reports() {
 
       {/* Value by location */}
       {summary && summary.by_location.length > 0 && (
-        <div className="bg-white rounded-2xl border border-neutral-100 shadow-sm mb-8">
+        <div className="bg-white rounded-[14px] border border-neutral-100 shadow-sm mb-8">
           <div className="px-6 py-4 border-b border-neutral-100">
             <h2 className="text-sm font-bold text-neutral-700 uppercase tracking-wider">Assets by Location</h2>
           </div>

@@ -121,12 +121,8 @@ export default function People() {
   })
 
   return (
-    <div className="p-8">
-      <div className="flex items-center justify-between mb-8">
-        <div>
-          <h1 className="text-2xl font-bold text-neutral-900 tracking-tight">People</h1>
-          <p className="text-sm text-neutral-500 mt-0.5">Device users and contacts</p>
-        </div>
+    <div className="px-7 pt-7 pb-12">
+      <div className="flex items-center justify-end mb-5">
         <div className="flex items-center gap-2">
           <CsvImport
             importPath="/people/import"
@@ -165,7 +161,7 @@ export default function People() {
         />
       </div>
 
-      <div className="bg-white rounded-2xl border border-neutral-100 shadow-sm overflow-hidden">
+      <div className="bg-white rounded-[14px] border border-neutral-100 shadow-sm overflow-hidden">
         <table className="w-full">
           <thead className="border-b border-neutral-100">
             <tr>

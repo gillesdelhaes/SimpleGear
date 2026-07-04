@@ -7,7 +7,7 @@ import StatusBadge from '../components/shared/StatusBadge'
 
 function StatCard({ label, value, sub, color }: { label: string; value: number; sub?: string; color?: string }) {
   return (
-    <div className="bg-white rounded-2xl p-6 border border-neutral-100 shadow-sm">
+    <div className="bg-white rounded-[14px] p-6 border border-neutral-100 shadow-sm">
       <div className="text-3xl font-bold tracking-tight text-neutral-900 mb-1" style={{ color }}>{value}</div>
       <div className="text-sm font-semibold text-neutral-600">{label}</div>
       {sub && <div className="text-xs text-neutral-400 mt-0.5">{sub}</div>}
@@ -94,12 +94,7 @@ export default function Dashboard() {
   })
 
   return (
-    <div className="p-8">
-      <div className="mb-8">
-        <h1 className="text-2xl font-bold text-neutral-900 tracking-tight">Dashboard</h1>
-        <p className="text-sm text-neutral-500 mt-0.5">Asset overview and recent activity</p>
-      </div>
-
+    <div className="px-7 pt-7 pb-12 max-w-[1200px]">
       {/* Stats */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
         <StatCard label="Total assets" value={stats?.total ?? 0} />
@@ -115,7 +110,7 @@ export default function Dashboard() {
 
       {/* Category breakdown */}
       {stats?.by_category && stats.by_category.length > 0 && (
-        <div className="bg-white rounded-2xl border border-neutral-100 shadow-sm p-6 mb-6">
+        <div className="bg-white rounded-[14px] border border-neutral-100 shadow-sm p-6 mb-6">
           <h2 className="text-sm font-bold text-neutral-700 mb-4 uppercase tracking-wider">By Category</h2>
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
             {stats.by_category.map((c) => (
@@ -130,7 +125,7 @@ export default function Dashboard() {
 
       <div className="grid lg:grid-cols-2 gap-6">
         {/* Alerts */}
-        <div className="bg-white rounded-2xl border border-neutral-100 shadow-sm">
+        <div className="bg-white rounded-[14px] border border-neutral-100 shadow-sm">
           <div className="px-6 py-4 border-b border-neutral-100 flex items-center justify-between">
             <h2 className="text-sm font-bold text-neutral-700 uppercase tracking-wider">EOL & Warranty Alerts</h2>
             {alerts.length > 0 && (
@@ -150,7 +145,7 @@ export default function Dashboard() {
         </div>
 
         {/* Activity */}
-        <div className="bg-white rounded-2xl border border-neutral-100 shadow-sm">
+        <div className="bg-white rounded-[14px] border border-neutral-100 shadow-sm">
           <div className="px-6 py-4 border-b border-neutral-100">
             <h2 className="text-sm font-bold text-neutral-700 uppercase tracking-wider">Recent Activity</h2>
           </div>

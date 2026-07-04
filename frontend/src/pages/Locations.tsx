@@ -41,22 +41,22 @@ function LocationForm({ location, parentId, onClose, allLocations }: {
     <form onSubmit={(e) => { e.preventDefault(); mutation.mutate() }}>
       <div className="space-y-4">
         <div>
-          <label className="block text-xs font-semibold text-neutral-600 mb-1.5">Name *</label>
+          <label className="block text-[13px] font-medium text-neutral-800 mb-1.5">Name *</label>
           <input
             required
             autoFocus
             value={name}
             onChange={(e) => setName(e.target.value)}
-            className="w-full border border-neutral-200 rounded-xl px-3 py-2.5 text-sm outline-none focus:border-sg-lime focus:ring-2 focus:ring-sg-lime/10"
+            className="w-full border border-neutral-200 rounded-[10px] px-3.5 py-2.5 text-sm outline-none focus:border-sg-lime focus:ring-2 focus:ring-sg-lime/10"
             placeholder="e.g. New York Office"
           />
         </div>
         <div>
-          <label className="block text-xs font-semibold text-neutral-600 mb-1.5">Parent location</label>
+          <label className="block text-[13px] font-medium text-neutral-800 mb-1.5">Parent location</label>
           <select
             value={pid}
             onChange={(e) => setPid(e.target.value)}
-            className="w-full border border-neutral-200 rounded-xl px-3 py-2.5 text-sm outline-none focus:border-sg-lime focus:ring-2 focus:ring-sg-lime/10"
+            className="w-full border border-neutral-200 rounded-[10px] px-3.5 py-2.5 text-sm outline-none focus:border-sg-lime focus:ring-2 focus:ring-sg-lime/10"
           >
             <option value="">— Top level —</option>
             {flat.map((l) => (
@@ -150,12 +150,8 @@ export default function Locations() {
   const flatTree = (locs: LocationTree[]): LocationTree[] => locs.flatMap((l) => [l, ...flatTree(l.children ?? [])])
 
   return (
-    <div className="p-8 max-w-3xl">
-      <div className="flex items-center justify-between mb-8">
-        <div>
-          <h1 className="text-2xl font-bold text-neutral-900 tracking-tight">Locations</h1>
-          <p className="text-sm text-neutral-500 mt-0.5">Organize assets by site, building, or room</p>
-        </div>
+    <div className="px-7 pt-7 pb-12 max-w-3xl">
+      <div className="flex items-center justify-end mb-5">
         <div className="flex items-center gap-2">
           <CsvImport
             importPath="/locations/import"
@@ -170,7 +166,7 @@ export default function Locations() {
         </div>
       </div>
 
-      <div className="bg-white rounded-2xl border border-neutral-100 shadow-sm p-3">
+      <div className="bg-white rounded-[14px] border border-neutral-100 shadow-sm p-3">
         {isLoading ? (
           <div className="flex justify-center py-12"><div className="w-6 h-6 border-2 border-sg-lime/30 border-t-sg-lime rounded-full animate-spin" /></div>
         ) : tree.length === 0 ? (

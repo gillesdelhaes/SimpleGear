@@ -107,12 +107,9 @@ export default function AuditLog() {
   }
 
   return (
-    <div className="p-8 max-w-5xl">
-      <div className="flex items-start justify-between mb-8">
-        <div>
-          <h1 className="text-2xl font-bold text-neutral-900 tracking-tight">Audit Log</h1>
-          <p className="text-sm text-neutral-500 mt-0.5">Append-only record of every change — who did what, when</p>
-        </div>
+    <div className="px-7 pt-7 pb-12 max-w-5xl">
+      <div className="flex items-center justify-between mb-5">
+        <p className="text-sm text-neutral-500">Append-only record of every change — who did what, when</p>
         <button
           onClick={exportCsv}
           className="px-4 py-2 rounded-xl border border-neutral-200 text-sm font-semibold text-neutral-700 hover:border-sg-lime hover:text-sg-forest transition-colors flex items-center gap-1.5"
@@ -143,7 +140,7 @@ export default function AuditLog() {
       </div>
 
       {/* Log */}
-      <div className="bg-white rounded-2xl border border-neutral-100 shadow-sm">
+      <div className="bg-white rounded-[14px] border border-neutral-100 shadow-sm">
         {isLoading ? (
           <div className="p-8 flex justify-center">
             <div className="w-8 h-8 border-2 border-sg-lime/30 border-t-sg-lime rounded-full animate-spin" />

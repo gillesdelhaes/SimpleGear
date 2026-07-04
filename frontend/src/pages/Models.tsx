@@ -39,8 +39,8 @@ function ModelForm({ model, onClose }: { model?: AssetModel; onClose: () => void
     onError: (e: any) => showToast(e.response?.data?.detail || 'Error', 'error'),
   })
 
-  const inputCls = 'w-full border border-neutral-200 rounded-xl px-3 py-2.5 text-sm outline-none focus:border-sg-lime focus:ring-2 focus:ring-sg-lime/10'
-  const labelCls = 'block text-xs font-semibold text-neutral-600 mb-1.5'
+  const inputCls = 'w-full border border-neutral-200 rounded-[10px] px-3.5 py-2.5 text-sm outline-none focus:border-sg-lime focus:ring-2 focus:ring-sg-lime/10'
+  const labelCls = 'block text-[13px] font-medium text-neutral-800 mb-1.5'
 
   return (
     <form onSubmit={(e) => { e.preventDefault(); mutation.mutate() }}>
@@ -132,14 +132,11 @@ export default function Models() {
   const totalAssets = models.reduce((sum, m) => sum + m.asset_count, 0)
 
   return (
-    <div className="p-8 max-w-4xl">
-      <div className="flex items-center justify-between mb-8">
-        <div>
-          <h1 className="text-2xl font-bold text-neutral-900 tracking-tight">Asset Models</h1>
-          <p className="text-sm text-neutral-500 mt-0.5">
-            {models.length} model{models.length !== 1 ? 's' : ''} · {totalAssets} asset{totalAssets !== 1 ? 's' : ''} catalogued
-          </p>
-        </div>
+    <div className="px-7 pt-7 pb-12 max-w-4xl">
+      <div className="flex items-center justify-between mb-5">
+        <p className="text-sm text-neutral-500">
+          {models.length} model{models.length !== 1 ? 's' : ''} · {totalAssets} asset{totalAssets !== 1 ? 's' : ''} catalogued
+        </p>
         <div className="flex items-center gap-2">
           <CsvImport
             importPath="/models/import"
@@ -167,7 +164,7 @@ export default function Models() {
       </div>
 
       {models.length === 0 ? (
-        <div className="bg-white rounded-2xl border border-neutral-100 p-10 text-center">
+        <div className="bg-white rounded-[14px] border border-neutral-100 p-10 text-center">
           <div className="text-2xl mb-2">📦</div>
           <p className="text-sm font-medium text-neutral-700 mb-1">No models yet</p>
           <p className="text-xs text-neutral-400">Create models like "MacBook Air M5 16GB" to standardise your asset catalogue.</p>
@@ -175,7 +172,7 @@ export default function Models() {
       ) : (
         <div className="space-y-4">
           {Object.entries(grouped).sort(([a], [b]) => a.localeCompare(b)).map(([manufacturer, items]) => (
-            <div key={manufacturer} className="bg-white rounded-2xl border border-neutral-100 shadow-sm">
+            <div key={manufacturer} className="bg-white rounded-[14px] border border-neutral-100 shadow-sm">
               <div className="px-5 py-2.5 border-b border-neutral-50">
                 <span className="text-xs font-bold uppercase tracking-widest text-neutral-400">{manufacturer}</span>
               </div>

@@ -38,9 +38,7 @@ export default function Search() {
   ]
 
   return (
-    <div className="p-8 max-w-4xl">
-      <h1 className="text-2xl font-bold text-neutral-900 tracking-tight mb-6">Search</h1>
-
+    <div className="px-7 pt-7 pb-12 max-w-4xl">
       <form onSubmit={handleSearch} className="mb-6">
         <div className="flex gap-2">
           <div className="flex-1 relative">
@@ -51,11 +49,11 @@ export default function Search() {
               value={query}
               onChange={(e) => setQuery(e.target.value)}
               placeholder="Search assets, serials, people, notes..."
-              className="w-full border border-neutral-200 rounded-2xl pl-11 pr-4 py-3 text-sm outline-none focus:border-sg-lime focus:ring-2 focus:ring-sg-lime/10 bg-white shadow-sm"
+              className="w-full border border-neutral-200 rounded-[14px] pl-11 pr-4 py-3 text-sm outline-none focus:border-sg-lime focus:ring-2 focus:ring-sg-lime/10 bg-white shadow-sm"
               autoFocus
             />
           </div>
-          <button type="submit" className="px-5 py-3 rounded-2xl gradient-bg text-white text-sm font-semibold hover:opacity-90 shadow-sm">Search</button>
+          <button type="submit" className="px-5 py-3 rounded-[14px] gradient-bg text-white text-sm font-semibold hover:opacity-90 shadow-sm">Search</button>
         </div>
       </form>
 
@@ -91,7 +89,7 @@ export default function Search() {
               {(tab === 'all' || tab === 'assets') && data.assets.length > 0 && (
                 <section>
                   <h2 className="text-xs font-bold uppercase tracking-widest text-neutral-400 mb-3">Assets ({data.assets.length})</h2>
-                  <div className="bg-white rounded-2xl border border-neutral-100 divide-y divide-neutral-50">
+                  <div className="bg-white rounded-[14px] border border-neutral-100 divide-y divide-neutral-50">
                     {data.assets.map((a) => (
                       <Link key={a.id} to={`/assets/${a.id}`} className="flex items-center gap-4 px-5 py-3.5 hover:bg-neutral-50 transition-colors group">
                         <div className="flex-1 min-w-0">
@@ -115,7 +113,7 @@ export default function Search() {
               {(tab === 'all' || tab === 'people') && data.people.length > 0 && (
                 <section>
                   <h2 className="text-xs font-bold uppercase tracking-widest text-neutral-400 mb-3">People ({data.people.length})</h2>
-                  <div className="bg-white rounded-2xl border border-neutral-100 divide-y divide-neutral-50">
+                  <div className="bg-white rounded-[14px] border border-neutral-100 divide-y divide-neutral-50">
                     {data.people.map((p) => (
                       <Link key={p.id} to={`/people/${p.id}`} className="flex items-center gap-4 px-5 py-3.5 hover:bg-neutral-50 transition-colors group">
                         <div className="w-9 h-9 rounded-full gradient-bg flex items-center justify-center text-white text-sm font-bold flex-shrink-0">
@@ -140,7 +138,7 @@ export default function Search() {
               {(tab === 'all' || tab === 'notes') && data.notes.length > 0 && (
                 <section>
                   <h2 className="text-xs font-bold uppercase tracking-widest text-neutral-400 mb-3">Notes ({data.notes.length})</h2>
-                  <div className="bg-white rounded-2xl border border-neutral-100 divide-y divide-neutral-50">
+                  <div className="bg-white rounded-[14px] border border-neutral-100 divide-y divide-neutral-50">
                     {data.notes.map((n) => (
                       <Link key={n.assignment_id} to={`/assets/${n.asset_id}`} className="flex items-start gap-4 px-5 py-3.5 hover:bg-neutral-50 transition-colors group">
                         <svg width="14" height="14" fill="none" stroke="#9CA3AF" viewBox="0 0 24 24" className="flex-shrink-0 mt-0.5">

@@ -40,18 +40,18 @@ function AssignModal({ assetId, onClose, people }: { assetId: number; onClose: (
     <form onSubmit={(e) => { e.preventDefault(); mutation.mutate() }}>
       <div className="space-y-4">
         <div>
-          <label className="block text-xs font-semibold text-neutral-600 mb-1.5">Assign to *</label>
-          <select required value={personId} onChange={(e) => setPersonId(e.target.value)} className="w-full border border-neutral-200 rounded-xl px-3 py-2.5 text-sm outline-none focus:border-sg-lime focus:ring-2 focus:ring-sg-lime/10">
+          <label className="block text-[13px] font-medium text-neutral-800 mb-1.5">Assign to *</label>
+          <select required value={personId} onChange={(e) => setPersonId(e.target.value)} className="w-full border border-neutral-200 rounded-[10px] px-3.5 py-2.5 text-sm outline-none focus:border-sg-lime focus:ring-2 focus:ring-sg-lime/10">
             <option value="">Select a person...</option>
             {people.map((p) => <option key={p.id} value={p.id}>{p.name}{p.department ? ` — ${p.department}` : ''}</option>)}
           </select>
         </div>
         <div>
-          <label className="block text-xs font-semibold text-neutral-600 mb-1.5">Note</label>
+          <label className="block text-[13px] font-medium text-neutral-800 mb-1.5">Note</label>
           <input
             value={note}
             onChange={(e) => setNote(e.target.value)}
-            className="w-full border border-neutral-200 rounded-xl px-3 py-2.5 text-sm outline-none focus:border-sg-lime focus:ring-2 focus:ring-sg-lime/10"
+            className="w-full border border-neutral-200 rounded-[10px] px-3.5 py-2.5 text-sm outline-none focus:border-sg-lime focus:ring-2 focus:ring-sg-lime/10"
             placeholder="e.g. Laptop wiped and ready"
           />
         </div>
@@ -85,11 +85,11 @@ function ReleaseModal({ assetId, onClose }: { assetId: number; onClose: () => vo
   return (
     <form onSubmit={(e) => { e.preventDefault(); mutation.mutate() }}>
       <div>
-        <label className="block text-xs font-semibold text-neutral-600 mb-1.5">Release note</label>
+        <label className="block text-[13px] font-medium text-neutral-800 mb-1.5">Release note</label>
         <input
           value={note}
           onChange={(e) => setNote(e.target.value)}
-          className="w-full border border-neutral-200 rounded-xl px-3 py-2.5 text-sm outline-none focus:border-sg-lime focus:ring-2 focus:ring-sg-lime/10"
+          className="w-full border border-neutral-200 rounded-[10px] px-3.5 py-2.5 text-sm outline-none focus:border-sg-lime focus:ring-2 focus:ring-sg-lime/10"
           placeholder="e.g. Broken screen, sent to repair"
           autoFocus
         />
@@ -132,18 +132,18 @@ function AuditModal({ asset, onClose, locations }: { asset: Asset; onClose: () =
           (<span className="font-mono text-xs">{asset.asset_tag}</span>). This stamps the audit trail and schedules the next check.
         </p>
         <div>
-          <label className="block text-xs font-semibold text-neutral-600 mb-1.5">Location (confirm or correct)</label>
-          <select value={locationId} onChange={(e) => setLocationId(e.target.value)} className="w-full border border-neutral-200 rounded-xl px-3 py-2.5 text-sm outline-none focus:border-sg-lime focus:ring-2 focus:ring-sg-lime/10">
+          <label className="block text-[13px] font-medium text-neutral-800 mb-1.5">Location (confirm or correct)</label>
+          <select value={locationId} onChange={(e) => setLocationId(e.target.value)} className="w-full border border-neutral-200 rounded-[10px] px-3.5 py-2.5 text-sm outline-none focus:border-sg-lime focus:ring-2 focus:ring-sg-lime/10">
             <option value="">No location</option>
             {locations.map((l) => <option key={l.id} value={l.id}>{l.name}</option>)}
           </select>
         </div>
         <div>
-          <label className="block text-xs font-semibold text-neutral-600 mb-1.5">Audit note</label>
+          <label className="block text-[13px] font-medium text-neutral-800 mb-1.5">Audit note</label>
           <input
             value={note}
             onChange={(e) => setNote(e.target.value)}
-            className="w-full border border-neutral-200 rounded-xl px-3 py-2.5 text-sm outline-none focus:border-sg-lime focus:ring-2 focus:ring-sg-lime/10"
+            className="w-full border border-neutral-200 rounded-[10px] px-3.5 py-2.5 text-sm outline-none focus:border-sg-lime focus:ring-2 focus:ring-sg-lime/10"
             placeholder="e.g. Sighted at desk 12, condition good"
             autoFocus
           />
@@ -205,8 +205,8 @@ function MaintenanceForm({ assetId, record, onClose }: { assetId: number; record
     onError: (e: any) => showToast(e.response?.data?.detail || 'Error', 'error'),
   })
 
-  const inputCls = 'w-full border border-neutral-200 rounded-xl px-3 py-2.5 text-sm outline-none focus:border-sg-lime focus:ring-2 focus:ring-sg-lime/10'
-  const labelCls = 'block text-xs font-semibold text-neutral-600 mb-1.5'
+  const inputCls = 'w-full border border-neutral-200 rounded-[10px] px-3.5 py-2.5 text-sm outline-none focus:border-sg-lime focus:ring-2 focus:ring-sg-lime/10'
+  const labelCls = 'block text-[13px] font-medium text-neutral-800 mb-1.5'
 
   return (
     <form onSubmit={(e) => { e.preventDefault(); mutation.mutate() }}>
@@ -340,7 +340,7 @@ export default function AssetDetail() {
   if (!asset) return <div className="p-8 text-neutral-500">Asset not found</div>
 
   return (
-    <div className="p-8 max-w-5xl">
+    <div className="px-7 pt-7 pb-12 max-w-5xl">
       {/* Breadcrumb */}
       <div className="flex items-center gap-2 text-sm text-neutral-400 mb-6">
         <Link to="/assets" className="hover:text-neutral-600">Assets</Link>
@@ -380,7 +380,7 @@ export default function AssetDetail() {
 
       {/* Currently assigned banner */}
       {asset.assigned_to && (
-        <div className="bg-sg-lime/8 border border-sg-lime/20 rounded-2xl px-5 py-3 mb-6 flex items-center gap-3">
+        <div className="bg-sg-lime/8 border border-sg-lime/20 rounded-[14px] px-5 py-3 mb-6 flex items-center gap-3">
           <div className="w-8 h-8 rounded-full gradient-bg flex items-center justify-center text-white text-xs font-bold flex-shrink-0">
             {asset.assigned_to.name.charAt(0).toUpperCase()}
           </div>
@@ -406,7 +406,7 @@ export default function AssetDetail() {
 
       {tab === 'info' && (
         <div className="grid grid-cols-2 gap-6">
-          <div className="bg-white rounded-2xl border border-neutral-100 p-6 space-y-5">
+          <div className="bg-white rounded-[14px] border border-neutral-100 p-6 space-y-5">
             <h3 className="text-xs font-bold uppercase tracking-widest text-neutral-400">Identification</h3>
             <Field label="Asset tag" value={asset.asset_tag} mono />
             <Field label="Serial number" value={asset.serial} mono />
@@ -427,14 +427,14 @@ export default function AssetDetail() {
               </>
             )}
           </div>
-          <div className="bg-white rounded-2xl border border-neutral-100 p-6 space-y-5">
+          <div className="bg-white rounded-[14px] border border-neutral-100 p-6 space-y-5">
             <h3 className="text-xs font-bold uppercase tracking-widest text-neutral-400">Classification</h3>
             <Field label="Category" value={asset.category?.name} />
             <Field label="Location" value={asset.location?.name} />
             <Field label="Supplier" value={asset.supplier} />
             {asset.purchase_price && <Field label="Purchase price" value={`$${asset.purchase_price.toFixed(2)}`} />}
           </div>
-          <div className="bg-white rounded-2xl border border-neutral-100 p-6 space-y-5">
+          <div className="bg-white rounded-[14px] border border-neutral-100 p-6 space-y-5">
             <h3 className="text-xs font-bold uppercase tracking-widest text-neutral-400">Dates</h3>
             <Field label="Purchase date" value={asset.purchase_date} />
             <Field label="Warranty expiry" value={asset.warranty_expiry} />
@@ -454,7 +454,7 @@ export default function AssetDetail() {
               </div>
             )}
           </div>
-          <div className="bg-white rounded-2xl border border-neutral-100 p-6 space-y-5">
+          <div className="bg-white rounded-[14px] border border-neutral-100 p-6 space-y-5">
             <h3 className="text-xs font-bold uppercase tracking-widest text-neutral-400">Audit</h3>
             <div>
               <div className="text-[10px] font-bold uppercase tracking-widest text-neutral-400 mb-0.5">Status</div>
@@ -477,7 +477,7 @@ export default function AssetDetail() {
             )}
           </div>
           {asset.notes && (
-            <div className="bg-white rounded-2xl border border-neutral-100 p-6">
+            <div className="bg-white rounded-[14px] border border-neutral-100 p-6">
               <h3 className="text-xs font-bold uppercase tracking-widest text-neutral-400 mb-3">Notes</h3>
               <p className="text-sm text-neutral-700 leading-relaxed whitespace-pre-wrap">{asset.notes}</p>
             </div>
@@ -486,7 +486,7 @@ export default function AssetDetail() {
       )}
 
       {tab === 'history' && (
-        <div className="bg-white rounded-2xl border border-neutral-100">
+        <div className="bg-white rounded-[14px] border border-neutral-100">
           {history.length === 0 ? (
             <div className="px-6 py-12 text-center text-sm text-neutral-400">No assignment history</div>
           ) : (
@@ -528,7 +528,7 @@ export default function AssetDetail() {
               Log maintenance
             </button>
           </div>
-          <div className="bg-white rounded-2xl border border-neutral-100">
+          <div className="bg-white rounded-[14px] border border-neutral-100">
             {maintenance.length === 0 ? (
               <div className="px-6 py-12 text-center text-sm text-neutral-400">No maintenance recorded for this asset</div>
             ) : (
@@ -566,7 +566,7 @@ export default function AssetDetail() {
       )}
 
       {tab === 'activity' && (
-        <div className="bg-white rounded-2xl border border-neutral-100">
+        <div className="bg-white rounded-[14px] border border-neutral-100">
           {activity.length === 0 ? (
             <div className="px-6 py-12 text-center text-sm text-neutral-400">No recorded activity for this asset yet</div>
           ) : (

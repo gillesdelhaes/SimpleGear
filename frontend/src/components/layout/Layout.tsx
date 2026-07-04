@@ -209,7 +209,7 @@ function TopBarSearch() {
           onKeyDown={handleKeyDown}
           placeholder="Search assets, serials, people…"
           style={{
-            height: 34, paddingLeft: 34, paddingRight: 12,
+            height: 38, paddingLeft: 34, paddingRight: 12,
             border: '1px solid #E5E5E5', borderRadius: 8,
             fontSize: 13, background: '#F9F9F9', color: '#0A0A0A',
             outline: 'none', width: 220,
@@ -478,7 +478,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 
           {isAdmin && (
             <>
-              <div style={{ margin: '12px 0 6px', padding: collapsed ? '0 10px' : '0 16px' }}>
+              <div style={{ margin: '12px 0 4px', padding: collapsed ? '0 10px' : '0 16px' }}>
                 {!collapsed && (
                   <span style={{ fontSize: 9, fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', color: 'rgba(115,115,115,0.6)' }}>Admin</span>
                 )}
@@ -573,21 +573,21 @@ export default function Layout({ children }: { children: React.ReactNode }) {
           borderBottom: '1px solid #E5E5E5',
           display: 'flex',
           alignItems: 'center',
-          padding: '0 20px',
-          gap: 16,
+          padding: '0 24px',
+          gap: 14,
           position: 'sticky',
           top: 0,
           zIndex: 30,
           flexShrink: 0,
         }}>
-          <h1 style={{ fontSize: 15, fontWeight: 700, color: '#0A0A0A', letterSpacing: '-0.02em', margin: 0, flex: 1 }}>
+          <h1 style={{ fontSize: 15, fontWeight: 700, color: '#0A0A0A', letterSpacing: '-0.02em', lineHeight: 1.25, margin: 0, flex: 1 }}>
             {title}
           </h1>
           <TopBarSearch />
         </header>
 
-        {/* Content */}
-        <main style={{ flex: 1, padding: '24px 24px 40px', minWidth: 0 }}>
+        {/* Content — pages own their padding (28/28/48) */}
+        <main style={{ flex: 1, padding: 0, minWidth: 0 }}>
           {children}
         </main>
       </div>

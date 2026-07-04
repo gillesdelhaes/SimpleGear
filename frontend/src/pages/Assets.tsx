@@ -488,7 +488,7 @@ export default function Assets() {
         {/* Table */}
         <div className="flex-1 overflow-auto">
           <table className="w-full">
-            <thead className="bg-white border-b border-neutral-100 sticky top-0 z-10">
+            <thead className="bg-neutral-50 border-b border-neutral-100 sticky top-0 z-10">
               <tr>
                 <th className="w-10 px-4 py-3">
                   <input type="checkbox" checked={assets.length > 0 && selected.size === assets.length} onChange={toggleAll} className="rounded" />
@@ -497,7 +497,7 @@ export default function Assets() {
                   <th
                     key={col.key}
                     onClick={col.sortKey ? () => handleSort(col.sortKey!) : undefined}
-                    className={`px-3 py-3 text-xs font-bold uppercase tracking-wider select-none ${col.align === 'right' ? 'text-right' : 'text-left'} ${
+                    className={`px-4 py-2.5 text-xs font-bold uppercase tracking-[0.07em] select-none ${col.align === 'right' ? 'text-right' : 'text-left'} ${
                       col.sortKey
                         ? `cursor-pointer transition-colors ${sort === col.sortKey ? 'text-sg-forest' : 'text-neutral-500 hover:text-neutral-800'}`
                         : 'text-neutral-500'
@@ -575,7 +575,7 @@ export default function Assets() {
                     <input type="checkbox" checked={selected.has(asset.id)} onChange={() => toggleOne(asset.id)} className="rounded" />
                   </td>
                   {visibleColumns.map((col) => (
-                    <td key={col.key} className={`px-3 py-3 ${col.align === 'right' ? 'text-right' : ''}`}>
+                    <td key={col.key} className={`px-4 py-3 ${col.align === 'right' ? 'text-right' : ''}`}>
                       {col.render(asset)}
                     </td>
                   ))}

@@ -22,7 +22,7 @@ export default function PersonDetail() {
   )
 
   return (
-    <div className="p-8 max-w-4xl">
+    <div className="px-7 pt-7 pb-12 max-w-4xl">
       <div className="flex items-center gap-2 text-sm text-neutral-400 mb-6">
         <Link to="/people" className="hover:text-neutral-600">People</Link>
         <span>/</span>
@@ -52,11 +52,11 @@ export default function PersonDetail() {
           Currently assigned ({assets?.current.length ?? 0})
         </h2>
         {!assets?.current.length ? (
-          <div className="bg-white rounded-2xl border border-neutral-100 p-6 text-center text-sm text-neutral-400">
+          <div className="bg-white rounded-[14px] border border-neutral-100 p-6 text-center text-sm text-neutral-400">
             No assets currently assigned
           </div>
         ) : (
-          <div className="bg-white rounded-2xl border border-neutral-100 divide-y divide-neutral-50">
+          <div className="bg-white rounded-[14px] border border-neutral-100 divide-y divide-neutral-50">
             {assets.current.map((asset) => (
               <div key={asset.id} className="flex items-center gap-4 px-5 py-3">
                 <div className="flex-1 min-w-0">
@@ -78,7 +78,7 @@ export default function PersonDetail() {
       {assets?.history && assets.history.length > 0 && (
         <div>
           <h2 className="text-sm font-bold uppercase tracking-widest text-neutral-400 mb-3">Assignment history</h2>
-          <div className="bg-white rounded-2xl border border-neutral-100 divide-y divide-neutral-50">
+          <div className="bg-white rounded-[14px] border border-neutral-100 divide-y divide-neutral-50">
             {assets.history.map((h) => (
               <div key={h.id} className="flex items-start gap-4 px-5 py-3">
                 <div className="w-6 h-6 rounded-full bg-neutral-100 flex items-center justify-center flex-shrink-0 mt-0.5">

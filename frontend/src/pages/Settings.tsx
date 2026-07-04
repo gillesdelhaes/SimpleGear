@@ -33,8 +33,8 @@ function StatusForm({ status, onClose }: { status?: AssetStatus; onClose: () => 
     <form onSubmit={(e) => { e.preventDefault(); mutation.mutate() }}>
       <div className="space-y-4">
         <div>
-          <label className="block text-xs font-semibold text-neutral-600 mb-1.5">Name *</label>
-          <input required autoFocus value={name} onChange={(e) => setName(e.target.value)} className="w-full border border-neutral-200 rounded-xl px-3 py-2.5 text-sm outline-none focus:border-sg-lime focus:ring-2 focus:ring-sg-lime/10" placeholder="e.g. Decommissioned" />
+          <label className="block text-[13px] font-medium text-neutral-800 mb-1.5">Name *</label>
+          <input required autoFocus value={name} onChange={(e) => setName(e.target.value)} className="w-full border border-neutral-200 rounded-[10px] px-3.5 py-2.5 text-sm outline-none focus:border-sg-lime focus:ring-2 focus:ring-sg-lime/10" placeholder="e.g. Decommissioned" />
         </div>
         <div>
           <label className="block text-xs font-semibold text-neutral-600 mb-2">Color</label>
@@ -89,7 +89,7 @@ function StatusesTab() {
           New status
         </button>
       </div>
-      <div className="bg-white rounded-2xl border border-neutral-100 divide-y divide-neutral-50">
+      <div className="bg-white rounded-[14px] border border-neutral-100 divide-y divide-neutral-50">
         {statuses.map((s) => (
           <div key={s.id} className="flex items-center gap-3 px-5 py-3">
             <span className="w-3 h-3 rounded-full flex-shrink-0" style={{ backgroundColor: s.color }} />
@@ -153,7 +153,7 @@ function CategoriesTab() {
           New category
         </button>
       </div>
-      <div className="bg-white rounded-2xl border border-neutral-100 divide-y divide-neutral-50">
+      <div className="bg-white rounded-[14px] border border-neutral-100 divide-y divide-neutral-50">
         {categories.map((c) => (
           <div key={c.id} className="flex items-center gap-3 px-5 py-3">
             {editingId === c.id ? (
@@ -180,7 +180,7 @@ function CategoriesTab() {
       </div>
       <Modal open={showCreate} onClose={() => setShowCreate(false)} title="New category" size="sm">
         <form onSubmit={(e) => { e.preventDefault(); createMutation.mutate() }}>
-          <input required autoFocus value={newName} onChange={(e) => setNewName(e.target.value)} className="w-full border border-neutral-200 rounded-xl px-3 py-2.5 text-sm outline-none focus:border-sg-lime focus:ring-2 focus:ring-sg-lime/10" placeholder="e.g. Networking Equipment" />
+          <input required autoFocus value={newName} onChange={(e) => setNewName(e.target.value)} className="w-full border border-neutral-200 rounded-[10px] px-3.5 py-2.5 text-sm outline-none focus:border-sg-lime focus:ring-2 focus:ring-sg-lime/10" placeholder="e.g. Networking Equipment" />
           <div className="flex justify-end gap-2 mt-4 pt-4 border-t border-neutral-100">
             <button type="button" onClick={() => setShowCreate(false)} className="px-4 py-2 rounded-lg border border-neutral-200 text-sm font-semibold text-neutral-700 hover:bg-neutral-50">Cancel</button>
             <button type="submit" disabled={createMutation.isPending} className="px-4 py-2 rounded-lg gradient-bg text-white text-sm font-semibold hover:opacity-90 disabled:opacity-60">{createMutation.isPending ? 'Creating...' : 'Create'}</button>
@@ -210,8 +210,8 @@ function UserForm({ user, onClose }: { user?: AuthUser; onClose: () => void }) {
     onError: (e: any) => showToast(e.response?.data?.detail || 'Error', 'error'),
   })
 
-  const inputCls = 'w-full border border-neutral-200 rounded-xl px-3 py-2.5 text-sm outline-none focus:border-sg-lime focus:ring-2 focus:ring-sg-lime/10'
-  const labelCls = 'block text-xs font-semibold text-neutral-600 mb-1.5'
+  const inputCls = 'w-full border border-neutral-200 rounded-[10px] px-3.5 py-2.5 text-sm outline-none focus:border-sg-lime focus:ring-2 focus:ring-sg-lime/10'
+  const labelCls = 'block text-[13px] font-medium text-neutral-800 mb-1.5'
 
   return (
     <form onSubmit={(e) => { e.preventDefault(); mutation.mutate() }}>
@@ -259,7 +259,7 @@ function UsersTab() {
           New user
         </button>
       </div>
-      <div className="bg-white rounded-2xl border border-neutral-100 divide-y divide-neutral-50">
+      <div className="bg-white rounded-[14px] border border-neutral-100 divide-y divide-neutral-50">
         {users.map((u) => (
           <div key={u.id} className="flex items-center gap-3 px-5 py-3">
             <div className="w-8 h-8 rounded-full gradient-bg flex items-center justify-center text-white text-xs font-bold flex-shrink-0">
@@ -313,14 +313,14 @@ function GeneralTab() {
     onError: (e: any) => showToast(e.response?.data?.detail || 'Error', 'error'),
   })
 
-  const inputCls = 'w-full border border-neutral-200 rounded-xl px-3 py-2.5 text-sm outline-none focus:border-sg-lime focus:ring-2 focus:ring-sg-lime/10'
+  const inputCls = 'w-full border border-neutral-200 rounded-[10px] px-3.5 py-2.5 text-sm outline-none focus:border-sg-lime focus:ring-2 focus:ring-sg-lime/10'
 
   return (
     <form onSubmit={(e) => { e.preventDefault(); mutation.mutate() }} className="space-y-6">
-      <div className="bg-white rounded-2xl border border-neutral-100 p-6">
+      <div className="bg-white rounded-[14px] border border-neutral-100 p-6">
         <h3 className="text-xs font-bold uppercase tracking-widest text-neutral-400 mb-4">Physical Audits</h3>
         <div className="max-w-md">
-          <label className="block text-xs font-semibold text-neutral-600 mb-1.5">Audit interval (months)</label>
+          <label className="block text-[13px] font-medium text-neutral-800 mb-1.5">Audit interval (months)</label>
           <input
             type="number" min="1" max="120" required
             value={interval}
@@ -334,10 +334,10 @@ function GeneralTab() {
         </p>
       </div>
 
-      <div className="bg-white rounded-2xl border border-neutral-100 p-6">
+      <div className="bg-white rounded-[14px] border border-neutral-100 p-6">
         <h3 className="text-xs font-bold uppercase tracking-widest text-neutral-400 mb-4">Asset Tags</h3>
         <div className="max-w-md">
-          <label className="block text-xs font-semibold text-neutral-600 mb-1.5">Tag prefix</label>
+          <label className="block text-[13px] font-medium text-neutral-800 mb-1.5">Tag prefix</label>
           <input
             required maxLength={10}
             value={prefix}
@@ -374,12 +374,7 @@ export default function Settings() {
   ]
 
   return (
-    <div className="p-8 max-w-3xl">
-      <div className="mb-8">
-        <h1 className="text-2xl font-bold text-neutral-900 tracking-tight">Settings</h1>
-        <p className="text-sm text-neutral-500 mt-0.5">Configure statuses, categories, and user accounts</p>
-      </div>
-
+    <div className="px-7 pt-7 pb-12 max-w-3xl">
       <div className="flex gap-1 mb-6 border-b border-neutral-100">
         {TABS.map((t) => (
           <button
