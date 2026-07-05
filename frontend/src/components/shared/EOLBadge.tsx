@@ -5,20 +5,20 @@ export default function EOLBadge({ days }: { days: number | null }) {
   let label = ''
 
   if (days < 0) {
-    cls = 'bg-neutral-800 text-white'
+    cls = 'bg-danger-tint text-danger-ink'
     label = 'Past EOL'
   } else if (days < 30) {
-    cls = 'bg-red-100 text-red-700'
+    cls = 'bg-danger-tint text-danger-ink'
     label = `EOL ${days}d`
   } else if (days < 90) {
-    cls = 'bg-amber-100 text-amber-700'
+    cls = 'bg-warn-tint text-warn-ink'
     label = `EOL ${days}d`
   } else {
     return null
   }
 
   return (
-    <span className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-semibold ${cls}`}>
+    <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full font-mono text-[11px] font-semibold whitespace-nowrap ${cls}`}>
       {label}
     </span>
   )

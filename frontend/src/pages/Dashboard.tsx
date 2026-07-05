@@ -1,16 +1,15 @@
 import { Link } from 'react-router-dom'
-import { useQuery, useQueryClient } from '@tanstack/react-query'
+import { useQuery } from '@tanstack/react-query'
 import api from '../lib/axios'
 import type { DashboardStats, Alert, ActivityItem } from '../types'
 import EOLBadge from '../components/shared/EOLBadge'
-import StatusBadge from '../components/shared/StatusBadge'
 
-function StatCard({ label, value, sub, color }: { label: string; value: number; sub?: string; color?: string }) {
+function StatCard({ label, value, sub, warn }: { label: string; value: number; sub?: string; warn?: boolean }) {
   return (
-    <div className="bg-white rounded-[14px] p-6 border border-neutral-100 shadow-sm">
-      <div className="text-3xl font-bold tracking-tight text-neutral-900 mb-1" style={{ color }}>{value}</div>
-      <div className="text-sm font-semibold text-neutral-600">{label}</div>
-      {sub && <div className="text-xs text-neutral-400 mt-0.5">{sub}</div>}
+    <div className="panel stat">
+      <div className="label">{label}</div>
+      <div className="value">{value}</div>
+      {sub && <span className={`delta${warn ? ' warn' : ''}`}>{sub}</span>}
     </div>
   )
 }
@@ -22,15 +21,13 @@ function AlertRow({ alert }: { alert: Alert }) {
     : alert.type === 'warranty'
       ? `Warranty expires ${overdue ? `${Math.abs(alert.days_remaining)}d ago` : `in ${alert.days_remaining}d`}`
       : `Audit ${overdue ? `overdue by ${Math.abs(alert.days_remaining)}d` : `due in ${alert.days_remaining}d`}`
+  const dotColor = alert.type === 'eol' ? 'var(--danger-ink)' : alert.type === 'warranty' ? 'var(--warn-ink)' : 'var(--b1)'
   return (
-    <Link
-      to={`/assets/${alert.asset_id}`}
-      className="flex items-center gap-3 px-4 py-3 hover:bg-neutral-50 rounded-xl transition-colors group"
-    >
-      <div className={`w-2 h-2 rounded-full flex-shrink-0 ${alert.type === 'eol' ? 'bg-red-400' : alert.type === 'warranty' ? 'bg-amber-400' : 'bg-sg-lime'}`} />
-      <div className="flex-1 min-w-0">
-        <div className="text-sm font-medium text-neutral-900 truncate group-hover:text-sg-forest transition-colors">{alert.asset_name}</div>
-        <div className="text-xs text-neutral-500">{message}</div>
+    <Link to={`/assets/${alert.asset_id}`} className="exp" style={{ textDecoration: 'none', color: 'inherit' }}>
+      <span style={{ width: 8, height: 8, borderRadius: '50%', flexShrink: 0, background: dotColor }} />
+      <div className="what">
+        <b>{alert.asset_name}</b>
+        <span>{message}</span>
       </div>
       <EOLBadge days={alert.days_remaining} />
     </Link>
@@ -50,31 +47,39 @@ function ActivityRow({ item }: { item: ActivityItem }) {
   })()
 
   return (
-    <div className="flex items-start gap-3 px-4 py-3">
-      <div className={`w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5 ${item.type === 'assigned' ? 'bg-sg-lime/15' : 'bg-neutral-100'}`}>
-        <svg width="10" height="10" fill="none" stroke={item.type === 'assigned' ? '#15803D' : '#9CA3AF'} viewBox="0 0 24 24">
+    <div className="exp" style={{ cursor: 'default' }}>
+      <span
+        className={item.type === 'assigned' ? 'text-brand-ink' : 'text-ink-3'}
+        style={{
+          width: 26, height: 26, borderRadius: 9, flexShrink: 0,
+          display: 'grid', placeItems: 'center',
+          background: item.type === 'assigned' ? 'var(--brand-tint)' : 'var(--field)',
+          border: item.type === 'assigned' ? 'none' : '1px solid var(--edge)',
+        }}
+      >
+        <svg width="10" height="10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           {item.type === 'assigned'
             ? <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M12 4v16m8-8H4" />
             : <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M20 12H4" />
           }
         </svg>
+      </span>
+      <div className="what">
+        <b>
+          <Link to={`/assets/${item.asset_id}`} className="text-ink hover:text-brand-ink" style={{ textDecoration: 'none' }}>{item.asset_name}</Link>
+          <span className="font-normal text-ink-2">
+            {' '}{item.type === 'assigned' ? 'assigned to' : 'released from'}{' '}
+          </span>
+          <Link to={`/people/${item.person_id}`} className="text-ink hover:text-brand-ink" style={{ textDecoration: 'none' }}>{item.person_name}</Link>
+        </b>
+        {item.note && <span className="font-mono">{item.note}</span>}
       </div>
-      <div className="flex-1 min-w-0">
-        <div className="text-sm text-neutral-700">
-          <Link to={`/assets/${item.asset_id}`} className="font-semibold hover:text-sg-forest">{item.asset_name}</Link>
-          {' '}{item.type === 'assigned' ? 'assigned to' : 'released from'}{' '}
-          <Link to={`/people/${item.person_id}`} className="font-semibold hover:text-sg-forest">{item.person_name}</Link>
-        </div>
-        {item.note && <div className="text-xs text-neutral-400 mt-0.5 truncate font-mono">{item.note}</div>}
-      </div>
-      <span className="text-xs text-neutral-400 flex-shrink-0 pt-0.5">{relative}</span>
+      <span className="text-[11px] font-mono text-ink-3 flex-shrink-0">{relative}</span>
     </div>
   )
 }
 
 export default function Dashboard() {
-  const qc = useQueryClient()
-
   const { data: stats } = useQuery<DashboardStats>({
     queryKey: ['dashboard', 'stats'],
     queryFn: () => api.get('/dashboard/stats').then((r) => r.data),
@@ -93,72 +98,77 @@ export default function Dashboard() {
     refetchInterval: 60_000,
   })
 
+  const auditsNeeded = (stats?.audits_overdue ?? 0) + (stats?.audits_never ?? 0)
+
   return (
-    <div className="px-7 pt-7 pb-12 max-w-[1200px]">
+    <div className="max-w-[1200px]">
       {/* Stats */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+      <section className="stats" aria-label="Key numbers">
         <StatCard label="Total assets" value={stats?.total ?? 0} />
-        <StatCard label="Assigned" value={stats?.assigned_count ?? 0} color="#15803D" />
-        <StatCard label="Available" value={stats?.unassigned_count ?? 0} color="#84CC16" />
+        <StatCard
+          label="Assigned"
+          value={stats?.assigned_count ?? 0}
+          sub={stats && stats.total > 0 ? `${Math.round((stats.assigned_count / stats.total) * 100)}% of fleet` : undefined}
+        />
+        <StatCard label="Available" value={stats?.unassigned_count ?? 0} sub="ready to assign" />
         <StatCard
           label="Audits needed"
-          value={(stats?.audits_overdue ?? 0) + (stats?.audits_never ?? 0)}
+          value={auditsNeeded}
           sub={stats ? `${stats.audits_overdue} overdue · ${stats.audits_never} never audited` : undefined}
-          color={(stats?.audits_overdue ?? 0) > 0 ? '#EF4444' : (stats?.audits_never ?? 0) > 0 ? '#F59E0B' : '#15803D'}
+          warn={(stats?.audits_overdue ?? 0) > 0 || (stats?.audits_never ?? 0) > 0}
         />
-      </div>
+      </section>
 
       {/* Category breakdown */}
       {stats?.by_category && stats.by_category.length > 0 && (
-        <div className="bg-white rounded-[14px] border border-neutral-100 shadow-sm p-6 mb-6">
-          <h2 className="text-sm font-bold text-neutral-700 mb-4 uppercase tracking-wider">By Category</h2>
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
+        <section className="panel mb-3.5">
+          <div className="panel-head">
+            <h2>By category</h2>
+          </div>
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2.5 p-[18px] pt-3.5">
             {stats.by_category.map((c) => (
-              <div key={c.name} className="flex items-center justify-between px-3 py-2 bg-neutral-50 rounded-xl">
-                <span className="text-sm text-neutral-700 truncate">{c.name}</span>
-                <span className="text-sm font-bold text-neutral-900 ml-2 flex-shrink-0">{c.count}</span>
+              <div key={c.name} className="flex items-center justify-between px-3.5 py-2.5 rounded-control border border-edge" style={{ background: 'var(--field)' }}>
+                <span className="text-[13px] text-ink-2 truncate">{c.name}</span>
+                <span className="text-[13px] font-bold text-ink ml-2 flex-shrink-0 font-mono">{c.count}</span>
               </div>
             ))}
           </div>
-        </div>
+        </section>
       )}
 
-      <div className="grid lg:grid-cols-2 gap-6">
+      <div className="grid lg:grid-cols-2 gap-3.5">
         {/* Alerts */}
-        <div className="bg-white rounded-[14px] border border-neutral-100 shadow-sm">
-          <div className="px-6 py-4 border-b border-neutral-100 flex items-center justify-between">
-            <h2 className="text-sm font-bold text-neutral-700 uppercase tracking-wider">EOL & Warranty Alerts</h2>
-            {alerts.length > 0 && (
-              <span className="text-xs bg-red-100 text-red-700 font-semibold px-2 py-0.5 rounded-full">{alerts.length}</span>
-            )}
+        <section className="panel">
+          <div className="panel-head">
+            <h2>EOL & warranty alerts</h2>
+            {alerts.length > 0 && <span className="pill danger plain">{alerts.length}</span>}
           </div>
           {alerts.length === 0 ? (
             <div className="px-6 py-8 text-center">
-              <div className="text-2xl mb-2">✓</div>
-              <p className="text-sm text-neutral-400">No alerts — all assets look good</p>
+              <p className="text-[13px] text-ink-3">No alerts — all assets look good.</p>
             </div>
           ) : (
-            <div className="py-1 divide-y divide-neutral-50">
+            <div className="explist">
               {alerts.slice(0, 10).map((a, i) => <AlertRow key={i} alert={a} />)}
             </div>
           )}
-        </div>
+        </section>
 
         {/* Activity */}
-        <div className="bg-white rounded-[14px] border border-neutral-100 shadow-sm">
-          <div className="px-6 py-4 border-b border-neutral-100">
-            <h2 className="text-sm font-bold text-neutral-700 uppercase tracking-wider">Recent Activity</h2>
+        <section className="panel">
+          <div className="panel-head">
+            <h2>Recent activity</h2>
           </div>
           {activity.length === 0 ? (
             <div className="px-6 py-8 text-center">
-              <p className="text-sm text-neutral-400">No activity yet — assign your first asset</p>
+              <p className="text-[13px] text-ink-3">No activity yet — assign your first asset.</p>
             </div>
           ) : (
-            <div className="py-1 divide-y divide-neutral-50">
+            <div className="explist">
               {activity.map((item, i) => <ActivityRow key={i} item={item} />)}
             </div>
           )}
-        </div>
+        </section>
       </div>
     </div>
   )
