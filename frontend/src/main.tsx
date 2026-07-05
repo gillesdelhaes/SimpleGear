@@ -6,6 +6,7 @@ import { AuthProvider } from './contexts/AuthContext'
 import { ToastProvider } from './components/shared/Toast'
 import { queryClient } from './lib/queryClient'
 import App from './App'
+import './glasshouse.css'
 import './index.css'
 
 ReactDOM.createRoot(document.getElementById('root')!).render(

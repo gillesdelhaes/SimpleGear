@@ -1,41 +1,18 @@
+/* App-specific styles. Design system lives in glasshouse.css (canonical copy —
+   never edit it here; see GLASSHOUSE_DESIGN_SYSTEM.md). */
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 @layer base {
-  *, *::before, *::after {
-    box-sizing: border-box;
-  }
-
   html {
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     text-rendering: optimizeLegibility;
   }
-
-  body {
-    @apply font-sans text-neutral-800 bg-neutral-50;
-    margin: 0;
-  }
-
-  :focus-visible {
-    outline: 2px solid #84CC16;
-    outline-offset: 2px;
-  }
 }
 
 @layer utilities {
-  .gradient-text {
-    background: linear-gradient(135deg, #84CC16 0%, #15803D 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-  }
-
-  .gradient-bg {
-    background: linear-gradient(135deg, #84CC16 0%, #15803D 100%);
-  }
-
   .scrollbar-thin::-webkit-scrollbar {
     width: 4px;
     height: 4px;
@@ -44,10 +21,11 @@
     background: transparent;
   }
   .scrollbar-thin::-webkit-scrollbar-thumb {
-    @apply bg-neutral-300 rounded-full;
+    background: var(--track);
+    border-radius: 999px;
   }
   .scrollbar-thin::-webkit-scrollbar-thumb:hover {
-    @apply bg-neutral-400;
+    background: var(--edge-hi);
   }
 }
 
