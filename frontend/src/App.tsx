@@ -41,10 +41,13 @@ export default function App() {
 
   if (!setupChecked && location.pathname !== '/setup') {
     return (
-      <div className="min-h-screen bg-[#0A0A0A] flex items-center justify-center">
+      <div className="min-h-screen flex items-center justify-center">
         <div className="flex flex-col items-center gap-3">
-          <div className="w-8 h-8 border-2 border-sg-lime/30 border-t-sg-lime rounded-full animate-spin" />
-          <span className="text-white/40 text-sm">Loading SimpleGear...</span>
+          <div
+            className="w-8 h-8 border-2 rounded-full animate-spin"
+            style={{ borderColor: 'var(--track)', borderTopColor: 'var(--b1)' }}
+          />
+          <span className="text-ink-3 text-sm">Loading SimpleGear…</span>
         </div>
       </div>
     )

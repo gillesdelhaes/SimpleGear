@@ -9,9 +9,13 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <script>
-      // Restore persisted theme before first paint to avoid a flash
+      // Restore persisted theme before first paint to avoid a flash.
+      // ?theme=light|dark overrides for previews without touching the saved choice.
+      const param = new URLSearchParams(location.search).get('theme')
       document.documentElement.dataset.theme =
-        localStorage.getItem('sg-theme') === 'light' ? 'light' : 'dark'
+        param === 'light' || param === 'dark'
+          ? param
+          : localStorage.getItem('sg-theme') === 'light' ? 'light' : 'dark'
     </script>
   </head>
   <body>
