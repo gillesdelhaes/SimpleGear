@@ -13,8 +13,8 @@ function Field({ label, value, mono }: { label: string; value?: string | null; m
   if (!value) return null
   return (
     <div>
-      <div className="text-[10px] font-bold uppercase tracking-widest text-neutral-400 mb-0.5">{label}</div>
-      <div className={`text-sm text-neutral-800 ${mono ? 'font-mono' : ''}`}>{value}</div>
+      <div className="text-[10px] font-semibold uppercase tracking-[0.12em] text-ink-3 mb-0.5">{label}</div>
+      <div className={`text-[13.5px] text-ink ${mono ? 'font-mono text-[12.5px]' : ''}`}>{value}</div>
     </div>
   )
 }
@@ -40,25 +40,27 @@ function AssignModal({ assetId, onClose, people }: { assetId: number; onClose: (
     <form onSubmit={(e) => { e.preventDefault(); mutation.mutate() }}>
       <div className="space-y-4">
         <div>
-          <label className="block text-[13px] font-medium text-neutral-800 mb-1.5">Assign to *</label>
-          <select required value={personId} onChange={(e) => setPersonId(e.target.value)} className="w-full border border-neutral-200 rounded-[10px] px-3.5 py-2.5 text-sm outline-none focus:border-sg-lime focus:ring-2 focus:ring-sg-lime/10">
-            <option value="">Select a person...</option>
-            {people.map((p) => <option key={p.id} value={p.id}>{p.name}{p.department ? ` — ${p.department}` : ''}</option>)}
-          </select>
+          <label className="block text-xs font-semibold text-ink-2 mb-1.5">Assign to *</label>
+          <div className="selectwrap">
+            <select required value={personId} onChange={(e) => setPersonId(e.target.value)} className="select">
+              <option value="">Select a person…</option>
+              {people.map((p) => <option key={p.id} value={p.id}>{p.name}{p.department ? ` — ${p.department}` : ''}</option>)}
+            </select>
+          </div>
         </div>
         <div>
-          <label className="block text-[13px] font-medium text-neutral-800 mb-1.5">Note</label>
+          <label className="block text-xs font-semibold text-ink-2 mb-1.5">Note</label>
           <input
             value={note}
             onChange={(e) => setNote(e.target.value)}
-            className="w-full border border-neutral-200 rounded-[10px] px-3.5 py-2.5 text-sm outline-none focus:border-sg-lime focus:ring-2 focus:ring-sg-lime/10"
+            className="input"
             placeholder="e.g. Laptop wiped and ready"
           />
         </div>
       </div>
-      <div className="flex justify-end gap-2 mt-6 pt-4 border-t border-neutral-100">
-        <button type="button" onClick={onClose} className="px-4 py-2 rounded-lg border border-neutral-200 text-sm font-semibold text-neutral-700 hover:bg-neutral-50">Cancel</button>
-        <button type="submit" disabled={mutation.isPending} className="px-4 py-2 rounded-lg gradient-bg text-white text-sm font-semibold hover:opacity-90 disabled:opacity-60">
+      <div className="modal-actions" style={{ borderTop: '1px solid var(--track)', paddingTop: 16 }}>
+        <button type="button" onClick={onClose} className="btn ghost">Cancel</button>
+        <button type="submit" disabled={mutation.isPending} className="btn">
           {mutation.isPending ? 'Assigning...' : 'Assign'}
         </button>
       </div>
@@ -85,18 +87,18 @@ function ReleaseModal({ assetId, onClose }: { assetId: number; onClose: () => vo
   return (
     <form onSubmit={(e) => { e.preventDefault(); mutation.mutate() }}>
       <div>
-        <label className="block text-[13px] font-medium text-neutral-800 mb-1.5">Release note</label>
+        <label className="block text-xs font-semibold text-ink-2 mb-1.5">Release note</label>
         <input
           value={note}
           onChange={(e) => setNote(e.target.value)}
-          className="w-full border border-neutral-200 rounded-[10px] px-3.5 py-2.5 text-sm outline-none focus:border-sg-lime focus:ring-2 focus:ring-sg-lime/10"
+          className="input"
           placeholder="e.g. Broken screen, sent to repair"
           autoFocus
         />
       </div>
-      <div className="flex justify-end gap-2 mt-6 pt-4 border-t border-neutral-100">
-        <button type="button" onClick={onClose} className="px-4 py-2 rounded-lg border border-neutral-200 text-sm font-semibold text-neutral-700 hover:bg-neutral-50">Cancel</button>
-        <button type="submit" disabled={mutation.isPending} className="px-4 py-2 rounded-lg bg-amber-500 hover:bg-amber-600 text-white text-sm font-semibold disabled:opacity-60">
+      <div className="modal-actions" style={{ borderTop: '1px solid var(--track)', paddingTop: 16 }}>
+        <button type="button" onClick={onClose} className="btn ghost">Cancel</button>
+        <button type="submit" disabled={mutation.isPending} className="btn ghost text-warn-ink">
           {mutation.isPending ? 'Releasing...' : 'Release'}
         </button>
       </div>
@@ -127,31 +129,33 @@ function AuditModal({ asset, onClose, locations }: { asset: Asset; onClose: () =
   return (
     <form onSubmit={(e) => { e.preventDefault(); mutation.mutate() }}>
       <div className="space-y-4">
-        <p className="text-sm text-neutral-500 leading-relaxed">
-          Confirm you have physically sighted <span className="font-semibold text-neutral-800">{asset.name}</span>{' '}
+        <p className="text-[13px] text-ink-2 leading-relaxed m-0">
+          Confirm you have physically sighted <span className="font-semibold text-ink">{asset.name}</span>{' '}
           (<span className="font-mono text-xs">{asset.asset_tag}</span>). This stamps the audit trail and schedules the next check.
         </p>
         <div>
-          <label className="block text-[13px] font-medium text-neutral-800 mb-1.5">Location (confirm or correct)</label>
-          <select value={locationId} onChange={(e) => setLocationId(e.target.value)} className="w-full border border-neutral-200 rounded-[10px] px-3.5 py-2.5 text-sm outline-none focus:border-sg-lime focus:ring-2 focus:ring-sg-lime/10">
-            <option value="">No location</option>
-            {locations.map((l) => <option key={l.id} value={l.id}>{l.name}</option>)}
-          </select>
+          <label className="block text-xs font-semibold text-ink-2 mb-1.5">Location (confirm or correct)</label>
+          <div className="selectwrap">
+            <select value={locationId} onChange={(e) => setLocationId(e.target.value)} className="select">
+              <option value="">No location</option>
+              {locations.map((l) => <option key={l.id} value={l.id}>{l.name}</option>)}
+            </select>
+          </div>
         </div>
         <div>
-          <label className="block text-[13px] font-medium text-neutral-800 mb-1.5">Audit note</label>
+          <label className="block text-xs font-semibold text-ink-2 mb-1.5">Audit note</label>
           <input
             value={note}
             onChange={(e) => setNote(e.target.value)}
-            className="w-full border border-neutral-200 rounded-[10px] px-3.5 py-2.5 text-sm outline-none focus:border-sg-lime focus:ring-2 focus:ring-sg-lime/10"
+            className="input"
             placeholder="e.g. Sighted at desk 12, condition good"
             autoFocus
           />
         </div>
       </div>
-      <div className="flex justify-end gap-2 mt-6 pt-4 border-t border-neutral-100">
-        <button type="button" onClick={onClose} className="px-4 py-2 rounded-lg border border-neutral-200 text-sm font-semibold text-neutral-700 hover:bg-neutral-50">Cancel</button>
-        <button type="submit" disabled={mutation.isPending} className="px-4 py-2 rounded-lg gradient-bg text-white text-sm font-semibold hover:opacity-90 disabled:opacity-60">
+      <div className="modal-actions" style={{ borderTop: '1px solid var(--track)', paddingTop: 16 }}>
+        <button type="button" onClick={onClose} className="btn ghost">Cancel</button>
+        <button type="submit" disabled={mutation.isPending} className="btn">
           {mutation.isPending ? 'Recording...' : 'Confirm audit'}
         </button>
       </div>
@@ -205,8 +209,8 @@ function MaintenanceForm({ assetId, record, onClose }: { assetId: number; record
     onError: (e: any) => showToast(e.response?.data?.detail || 'Error', 'error'),
   })
 
-  const inputCls = 'w-full border border-neutral-200 rounded-[10px] px-3.5 py-2.5 text-sm outline-none focus:border-sg-lime focus:ring-2 focus:ring-sg-lime/10'
-  const labelCls = 'block text-[13px] font-medium text-neutral-800 mb-1.5'
+  const inputCls = 'input'
+  const labelCls = 'block text-xs font-semibold text-ink-2 mb-1.5'
 
   return (
     <form onSubmit={(e) => { e.preventDefault(); mutation.mutate() }}>
@@ -214,9 +218,11 @@ function MaintenanceForm({ assetId, record, onClose }: { assetId: number; record
         <div className="grid grid-cols-2 gap-3">
           <div>
             <label className={labelCls}>Type</label>
-            <select className={inputCls} value={form.maintenance_type} onChange={set('maintenance_type')}>
-              {MAINTENANCE_TYPES.map((t) => <option key={t.value} value={t.value}>{t.label}</option>)}
-            </select>
+            <div className="selectwrap">
+              <select className="select" value={form.maintenance_type} onChange={set('maintenance_type')}>
+                {MAINTENANCE_TYPES.map((t) => <option key={t.value} value={t.value}>{t.label}</option>)}
+              </select>
+            </div>
           </div>
           <div>
             <label className={labelCls}>Cost</label>
@@ -246,9 +252,9 @@ function MaintenanceForm({ assetId, record, onClose }: { assetId: number; record
           <textarea rows={2} className={inputCls} value={form.notes} onChange={set('notes')} placeholder="Optional details" />
         </div>
       </div>
-      <div className="flex justify-end gap-2 mt-6 pt-4 border-t border-neutral-100">
-        <button type="button" onClick={onClose} className="px-4 py-2 rounded-lg border border-neutral-200 text-sm font-semibold text-neutral-700 hover:bg-neutral-50">Cancel</button>
-        <button type="submit" disabled={mutation.isPending} className="px-4 py-2 rounded-lg gradient-bg text-white text-sm font-semibold hover:opacity-90 disabled:opacity-60">
+      <div className="modal-actions" style={{ borderTop: '1px solid var(--track)', paddingTop: 16 }}>
+        <button type="button" onClick={onClose} className="btn ghost">Cancel</button>
+        <button type="submit" disabled={mutation.isPending} className="btn">
           {mutation.isPending ? 'Saving...' : record ? 'Save' : 'Log maintenance'}
         </button>
       </div>
@@ -270,12 +276,12 @@ const ACTIVITY_LABELS: Record<string, string> = {
 
 function AuditBadge({ asset }: { asset: Asset }) {
   if (asset.days_to_next_audit !== null && asset.days_to_next_audit < 0) {
-    return <span className="text-[10px] font-bold uppercase tracking-wider text-red-600 bg-red-50 px-2 py-0.5 rounded-full">Audit overdue</span>
+    return <span className="text-[10px] font-bold uppercase tracking-wider text-danger-ink bg-danger-tint px-2 py-0.5 rounded-full">Audit overdue</span>
   }
   if (!asset.last_audit_at) {
-    return <span className="text-[10px] font-bold uppercase tracking-wider text-amber-600 bg-amber-50 px-2 py-0.5 rounded-full">Never audited</span>
+    return <span className="text-[10px] font-bold uppercase tracking-wider text-warn-ink bg-warn-tint px-2 py-0.5 rounded-full">Never audited</span>
   }
-  return <span className="text-[10px] font-bold uppercase tracking-wider text-sg-forest bg-sg-lime/10 px-2 py-0.5 rounded-full">Audit OK</span>
+  return <span className="text-[10px] font-bold uppercase tracking-wider text-brand-ink bg-brand-tint px-2 py-0.5 rounded-full">Audit OK</span>
 }
 
 export default function AssetDetail() {
@@ -335,44 +341,44 @@ export default function AssetDetail() {
   })
 
   if (isLoading) return (
-    <div className="p-8 flex justify-center"><div className="w-8 h-8 border-2 border-sg-lime/30 border-t-sg-lime rounded-full animate-spin" /></div>
+    <div className="p-8 flex justify-center"><div className="w-8 h-8 border-2 rounded-full animate-spin" style={{ borderColor: 'var(--track)', borderTopColor: 'var(--b1)' }} /></div>
   )
-  if (!asset) return <div className="p-8 text-neutral-500">Asset not found</div>
+  if (!asset) return <div className="p-8 text-ink-2">Asset not found.</div>
 
   return (
-    <div className="px-7 pt-7 pb-12 max-w-5xl">
+    <div className="max-w-5xl">
       {/* Breadcrumb */}
-      <div className="flex items-center gap-2 text-sm text-neutral-400 mb-6">
-        <Link to="/assets" className="hover:text-neutral-600">Assets</Link>
+      <div className="flex items-center gap-2 text-[12.5px] text-ink-3 mb-5">
+        <Link to="/assets" className="hover:text-ink">Assets</Link>
         <span>/</span>
-        <span className="text-neutral-700 font-medium">{asset.name}</span>
+        <span className="text-ink-2 font-medium">{asset.name}</span>
       </div>
 
       {/* Header */}
       <div className="flex items-start justify-between mb-8">
         <div>
           <div className="flex items-center gap-3 mb-2">
-            <h1 className="text-2xl font-bold text-neutral-900 tracking-tight">{asset.name}</h1>
+            <h1 className="text-2xl font-bold text-ink tracking-tight m-0">{asset.name}</h1>
             {asset.status && <StatusBadge status={asset.status} />}
             {asset.days_to_eol !== undefined && <EOLBadge days={asset.days_to_eol ?? null} />}
             <AuditBadge asset={asset} />
           </div>
           {asset.asset_model ? (
-            <p className="text-neutral-500">{[asset.asset_model.manufacturer, asset.asset_model.name, asset.asset_model.model_number].filter(Boolean).join(' · ')}</p>
+            <p className="text-ink-2 m-0">{[asset.asset_model.manufacturer, asset.asset_model.name, asset.asset_model.model_number].filter(Boolean).join(' · ')}</p>
           ) : (asset.make || asset.model) && (
-            <p className="text-neutral-500">{[asset.make, asset.model, asset.model_number].filter(Boolean).join(' · ')}</p>
+            <p className="text-ink-2 m-0">{[asset.make, asset.model, asset.model_number].filter(Boolean).join(' · ')}</p>
           )}
         </div>
         <div className="flex items-center gap-2">
-          <button onClick={() => setShowAudit(true)} className="px-4 py-2 rounded-xl border border-sg-lime/40 bg-sg-lime/8 text-sg-forest text-sm font-semibold hover:bg-sg-lime/15 transition-colors">
+          <button onClick={() => setShowAudit(true)} className="btn ghost text-brand-ink">
             Audit
           </button>
           {asset.assigned_to ? (
-            <button onClick={() => setShowRelease(true)} className="px-4 py-2 rounded-xl border border-amber-200 bg-amber-50 text-amber-700 text-sm font-semibold hover:bg-amber-100">Release</button>
+            <button onClick={() => setShowRelease(true)} className="btn ghost text-warn-ink">Release</button>
           ) : (
-            <button onClick={() => setShowAssign(true)} className="px-4 py-2 rounded-xl gradient-bg text-white text-sm font-semibold hover:opacity-90">Assign</button>
+            <button onClick={() => setShowAssign(true)} className="btn">Assign</button>
           )}
-          <button onClick={() => setShowDelete(true)} className="px-3 py-2 rounded-xl border border-neutral-200 text-neutral-500 text-sm hover:border-red-200 hover:text-red-500 transition-colors">
+          <button onClick={() => setShowDelete(true)} className="btn ghost text-ink-3 hover:text-danger-ink" aria-label="Delete asset">
             <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
           </button>
         </div>
@@ -380,42 +386,38 @@ export default function AssetDetail() {
 
       {/* Currently assigned banner */}
       {asset.assigned_to && (
-        <div className="bg-sg-lime/8 border border-sg-lime/20 rounded-[14px] px-5 py-3 mb-6 flex items-center gap-3">
-          <div className="w-8 h-8 rounded-full gradient-bg flex items-center justify-center text-white text-xs font-bold flex-shrink-0">
+        <div className="rounded-block px-5 py-3 mb-5 flex items-center gap-3" style={{ background: 'var(--brand-tint)', border: '1px solid color-mix(in oklab, var(--b1) 30%, transparent)' }}>
+          <div className="avatar" style={{ width: 30, height: 30, fontSize: 12 }}>
             {asset.assigned_to.name.charAt(0).toUpperCase()}
           </div>
           <div>
-            <div className="text-sm font-semibold text-neutral-800">
+            <div className="text-[13.5px] font-semibold text-ink">
               Assigned to{' '}
-              <Link to={`/people/${asset.assigned_to.id}`} className="text-sg-forest hover:underline">{asset.assigned_to.name}</Link>
+              <Link to={`/people/${asset.assigned_to.id}`} className="text-brand-ink hover:underline">{asset.assigned_to.name}</Link>
             </div>
           </div>
         </div>
       )}
 
       {/* Tabs */}
-      <div className="flex gap-1 mb-6 border-b border-neutral-100">
+      <div className="flex gap-1.5 mb-5 flex-wrap">
         {(['info', 'history', 'maintenance', 'activity'] as const).map((t) => (
-          <button
-            key={t}
-            onClick={() => setTab(t)}
-            className={`px-4 py-2 text-sm font-semibold capitalize border-b-2 -mb-px transition-colors ${tab === t ? 'border-sg-lime text-sg-forest' : 'border-transparent text-neutral-500 hover:text-neutral-700'}`}
-          >{t}</button>
+          <button key={t} onClick={() => setTab(t)} className={`chip capitalize${tab === t ? ' on' : ''}`}>{t}</button>
         ))}
       </div>
 
       {tab === 'info' && (
-        <div className="grid grid-cols-2 gap-6">
-          <div className="bg-white rounded-[14px] border border-neutral-100 p-6 space-y-5">
-            <h3 className="text-xs font-bold uppercase tracking-widest text-neutral-400">Identification</h3>
+        <div className="grid grid-cols-2 gap-3.5">
+          <div className="panel p-6 space-y-5">
+            <h3 className="text-[10.5px] font-semibold uppercase tracking-[0.12em] text-ink-3 m-0">Identification</h3>
             <Field label="Asset tag" value={asset.asset_tag} mono />
             <Field label="Serial number" value={asset.serial} mono />
             {asset.asset_model ? (
               <>
                 <div>
-                  <div className="text-[10px] font-bold uppercase tracking-widest text-neutral-400 mb-0.5">Model</div>
-                  <div className="text-sm text-neutral-800">{asset.asset_model.name}</div>
-                  {asset.asset_model.manufacturer && <div className="text-xs text-neutral-400 mt-0.5">{asset.asset_model.manufacturer}</div>}
+                  <div className="text-[10px] font-semibold uppercase tracking-[0.12em] text-ink-3 mb-0.5">Model</div>
+                  <div className="text-[13.5px] text-ink">{asset.asset_model.name}</div>
+                  {asset.asset_model.manufacturer && <div className="text-xs text-ink-3 mt-0.5">{asset.asset_model.manufacturer}</div>}
                 </div>
                 <Field label="Model number" value={asset.asset_model.model_number ?? asset.model_number} mono />
               </>
@@ -427,23 +429,23 @@ export default function AssetDetail() {
               </>
             )}
           </div>
-          <div className="bg-white rounded-[14px] border border-neutral-100 p-6 space-y-5">
-            <h3 className="text-xs font-bold uppercase tracking-widest text-neutral-400">Classification</h3>
+          <div className="panel p-6 space-y-5">
+            <h3 className="text-[10.5px] font-semibold uppercase tracking-[0.12em] text-ink-3 m-0">Classification</h3>
             <Field label="Category" value={asset.category?.name} />
             <Field label="Location" value={asset.location?.name} />
             <Field label="Supplier" value={asset.supplier} />
             {asset.purchase_price && <Field label="Purchase price" value={`$${asset.purchase_price.toFixed(2)}`} />}
           </div>
-          <div className="bg-white rounded-[14px] border border-neutral-100 p-6 space-y-5">
-            <h3 className="text-xs font-bold uppercase tracking-widest text-neutral-400">Dates</h3>
+          <div className="panel p-6 space-y-5">
+            <h3 className="text-[10.5px] font-semibold uppercase tracking-[0.12em] text-ink-3 m-0">Dates</h3>
             <Field label="Purchase date" value={asset.purchase_date} />
             <Field label="Warranty expiry" value={asset.warranty_expiry} />
             <Field label="EOL date" value={asset.eol_date} />
             {asset.days_to_eol != null && (
               <div>
-                <div className="text-[10px] font-bold uppercase tracking-widest text-neutral-400 mb-0.5">EOL in</div>
+                <div className="text-[10px] font-semibold uppercase tracking-[0.12em] text-ink-3 mb-0.5">EOL in</div>
                 <div className={`text-sm font-semibold ${
-                  asset.days_to_eol < 0 ? 'text-neutral-900' : asset.days_to_eol < 30 ? 'text-red-600' : asset.days_to_eol < 90 ? 'text-amber-600' : 'text-sg-forest'
+                  asset.days_to_eol < 0 ? 'text-ink' : asset.days_to_eol < 30 ? 'text-danger-ink' : asset.days_to_eol < 90 ? 'text-warn-ink' : 'text-brand-ink'
                 }`}>
                   {asset.days_to_eol < 0
                     ? `${Math.abs(asset.days_to_eol)} days past EOL`
@@ -454,10 +456,10 @@ export default function AssetDetail() {
               </div>
             )}
           </div>
-          <div className="bg-white rounded-[14px] border border-neutral-100 p-6 space-y-5">
-            <h3 className="text-xs font-bold uppercase tracking-widest text-neutral-400">Audit</h3>
+          <div className="panel p-6 space-y-5">
+            <h3 className="text-[10.5px] font-semibold uppercase tracking-[0.12em] text-ink-3 m-0">Audit</h3>
             <div>
-              <div className="text-[10px] font-bold uppercase tracking-widest text-neutral-400 mb-0.5">Status</div>
+              <div className="text-[10px] font-semibold uppercase tracking-[0.12em] text-ink-3 mb-0.5">Status</div>
               <AuditBadge asset={asset} />
             </div>
             <Field
@@ -473,45 +475,45 @@ export default function AssetDetail() {
                 : null}
             />
             {!asset.last_audit_at && (
-              <p className="text-xs text-neutral-400 leading-relaxed">This asset has never been physically verified. Use the Audit button to record a check.</p>
+              <p className="text-xs text-ink-3 leading-relaxed m-0">This asset has never been physically verified. Use the Audit button to record a check.</p>
             )}
           </div>
           {asset.notes && (
-            <div className="bg-white rounded-[14px] border border-neutral-100 p-6">
-              <h3 className="text-xs font-bold uppercase tracking-widest text-neutral-400 mb-3">Notes</h3>
-              <p className="text-sm text-neutral-700 leading-relaxed whitespace-pre-wrap">{asset.notes}</p>
+            <div className="panel p-6">
+              <h3 className="text-[10.5px] font-semibold uppercase tracking-[0.12em] text-ink-3 mb-3 mt-0">Notes</h3>
+              <p className="text-[13px] text-ink-2 leading-relaxed whitespace-pre-wrap m-0">{asset.notes}</p>
             </div>
           )}
         </div>
       )}
 
       {tab === 'history' && (
-        <div className="bg-white rounded-[14px] border border-neutral-100">
+        <div className="panel">
           {history.length === 0 ? (
-            <div className="px-6 py-12 text-center text-sm text-neutral-400">No assignment history</div>
+            <div className="px-6 py-12 text-center text-[13px] text-ink-3">No assignment history</div>
           ) : (
-            <div className="divide-y divide-neutral-50">
+            <div className="divide-y divide-track">
               {history.map((h) => (
                 <div key={h.id} className="flex items-start gap-4 px-6 py-4">
-                  <div className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5 ${h.released_at ? 'bg-neutral-100' : 'bg-sg-lime/10'}`}>
-                    <svg width="12" height="12" fill="none" stroke={h.released_at ? '#9CA3AF' : '#15803D'} viewBox="0 0 24 24">
+                  <div className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5 ${h.released_at ? 'bg-field' : 'bg-brand-tint'}`}>
+                    <svg width="12" height="12" fill="none" stroke={h.released_at ? 'var(--ink-3)' : 'var(--brand-ink)'} viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                     </svg>
                   </div>
                   <div className="flex-1 min-w-0">
-                    <div className="text-sm font-medium text-neutral-800">
+                    <div className="text-[13.5px] font-medium text-ink">
                       {h.person_name ? (
-                        <Link to={`/people/${h.person_id}`} className="hover:text-sg-forest">{h.person_name}</Link>
+                        <Link to={`/people/${h.person_id}`} className="hover:text-brand-ink">{h.person_name}</Link>
                       ) : 'Unknown'}
                     </div>
-                    <div className="text-xs text-neutral-400 mt-0.5">
+                    <div className="text-xs text-ink-3 mt-0.5">
                       {h.assigned_at ? new Date(h.assigned_at).toLocaleDateString() : ''}
                       {h.released_at && ` → ${new Date(h.released_at).toLocaleDateString()}`}
                     </div>
-                    {h.note && <div className="text-xs text-neutral-500 mt-1 font-mono bg-neutral-50 rounded px-2 py-1">{h.note}</div>}
+                    {h.note && <div className="text-xs text-ink-2 mt-1 font-mono rounded px-2 py-1" style={{ background: 'var(--field)' }}>{h.note}</div>}
                   </div>
                   {!h.released_at && (
-                    <span className="text-[10px] font-bold uppercase tracking-wider text-sg-forest bg-sg-lime/10 px-2 py-0.5 rounded-full flex-shrink-0">Active</span>
+                    <span className="text-[10px] font-bold uppercase tracking-wider text-brand-ink bg-brand-tint px-2 py-0.5 rounded-full flex-shrink-0">Active</span>
                   )}
                 </div>
               ))}
@@ -523,37 +525,37 @@ export default function AssetDetail() {
       {tab === 'maintenance' && (
         <div>
           <div className="flex justify-end mb-4">
-            <button onClick={() => setShowMaintenance(true)} className="px-4 py-2 rounded-xl gradient-bg text-white text-sm font-semibold hover:opacity-90 flex items-center gap-1.5">
+            <button onClick={() => setShowMaintenance(true)} className="btn sm">
               <svg width="13" height="13" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M12 4v16m8-8H4" /></svg>
               Log maintenance
             </button>
           </div>
-          <div className="bg-white rounded-[14px] border border-neutral-100">
+          <div className="panel">
             {maintenance.length === 0 ? (
-              <div className="px-6 py-12 text-center text-sm text-neutral-400">No maintenance recorded for this asset</div>
+              <div className="px-6 py-12 text-center text-[13px] text-ink-3">No maintenance recorded for this asset</div>
             ) : (
-              <div className="divide-y divide-neutral-50">
+              <div className="divide-y divide-track">
                 {maintenance.map((m) => (
                   <div key={m.id} className="flex items-start gap-4 px-6 py-4">
-                    <span className={`text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full flex-shrink-0 mt-0.5 ${m.completed_date ? 'bg-neutral-100 text-neutral-500' : 'bg-amber-50 text-amber-600'}`}>
+                    <span className={`text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full flex-shrink-0 mt-0.5 ${m.completed_date ? 'bg-field text-ink-3' : 'bg-warn-tint text-warn-ink'}`}>
                       {m.completed_date ? m.maintenance_type : `${m.maintenance_type} · open`}
                     </span>
                     <div className="flex-1 min-w-0">
-                      <div className="text-sm font-medium text-neutral-800">{m.title}</div>
-                      <div className="text-xs text-neutral-400 mt-0.5">
+                      <div className="text-[13.5px] font-medium text-ink">{m.title}</div>
+                      <div className="text-xs text-ink-3 mt-0.5">
                         {m.start_date ?? ''}
                         {m.completed_date && ` → ${m.completed_date}`}
                         {m.provider && ` · ${m.provider}`}
                         {m.created_by_name && ` · logged by ${m.created_by_name}`}
                       </div>
-                      {m.notes && <div className="text-xs text-neutral-500 mt-1 font-mono bg-neutral-50 rounded px-2 py-1">{m.notes}</div>}
+                      {m.notes && <div className="text-xs text-ink-2 mt-1 font-mono rounded px-2 py-1" style={{ background: 'var(--field)' }}>{m.notes}</div>}
                     </div>
-                    {m.cost !== null && <span className="text-sm font-semibold text-neutral-700 flex-shrink-0">${m.cost.toFixed(2)}</span>}
+                    {m.cost !== null && <span className="text-[13px] font-semibold font-mono text-ink flex-shrink-0">${m.cost.toFixed(2)}</span>}
                     <div className="flex gap-1 flex-shrink-0">
-                      <button onClick={() => setEditingMaintenance(m)} className="p-1.5 rounded-lg text-neutral-400 hover:text-neutral-700 hover:bg-neutral-100">
+                      <button onClick={() => setEditingMaintenance(m)} className="p-1.5 rounded-lg text-ink-3 hover:text-ink hover:bg-row-hover bg-transparent border-0 cursor-pointer">
                         <svg width="13" height="13" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" /></svg>
                       </button>
-                      <button onClick={() => deleteMaintenanceMutation.mutate(m.id)} className="p-1.5 rounded-lg text-neutral-400 hover:text-red-500 hover:bg-red-50">
+                      <button onClick={() => deleteMaintenanceMutation.mutate(m.id)} className="p-1.5 rounded-lg text-ink-3 hover:text-danger-ink bg-transparent border-0 cursor-pointer">
                         <svg width="13" height="13" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
                       </button>
                     </div>
@@ -566,34 +568,34 @@ export default function AssetDetail() {
       )}
 
       {tab === 'activity' && (
-        <div className="bg-white rounded-[14px] border border-neutral-100">
+        <div className="panel">
           {activity.length === 0 ? (
-            <div className="px-6 py-12 text-center text-sm text-neutral-400">No recorded activity for this asset yet</div>
+            <div className="px-6 py-12 text-center text-[13px] text-ink-3">No recorded activity for this asset yet</div>
           ) : (
-            <div className="divide-y divide-neutral-50">
+            <div className="divide-y divide-track">
               {activity.map((e) => {
                 const changes = (e.payload as any)?.changes as Record<string, { from: unknown; to: unknown }> | undefined
                 const note = (e.payload as any)?.note as string | undefined
                 return (
                   <div key={e.id} className="flex items-start gap-4 px-6 py-3.5">
-                    <span className={`text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full flex-shrink-0 mt-0.5 ${e.action === 'asset.audited' ? 'bg-sg-lime/10 text-sg-forest' : 'bg-neutral-100 text-neutral-500'}`}>
+                    <span className={`text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full flex-shrink-0 mt-0.5 ${e.action === 'asset.audited' ? 'bg-brand-tint text-brand-ink' : 'bg-field text-ink-3'}`}>
                       {ACTIVITY_LABELS[e.action] ?? e.action}
                     </span>
                     <div className="flex-1 min-w-0">
-                      <div className="text-sm text-neutral-700">
-                        <span className="font-semibold">{e.actor_name ?? 'System'}</span>
+                      <div className="text-[13.5px] text-ink-2">
+                        <span className="font-semibold text-ink">{e.actor_name ?? 'System'}</span>
                         {e.action === 'asset.assigned' && (e.payload as any)?.person_name && (
                           <span> → {(e.payload as any).person_name}</span>
                         )}
                       </div>
                       {changes && (
-                        <div className="text-xs text-neutral-400 mt-0.5 font-mono">
+                        <div className="text-[11px] text-ink-3 mt-0.5 font-mono">
                           {Object.entries(changes).map(([f, c]) => `${f}: ${c.from ?? '—'} → ${c.to ?? '—'}`).join(' · ')}
                         </div>
                       )}
-                      {note && <div className="text-xs text-neutral-500 mt-1 font-mono bg-neutral-50 rounded px-2 py-1">{note}</div>}
+                      {note && <div className="text-xs text-ink-2 mt-1 font-mono rounded px-2 py-1" style={{ background: 'var(--field)' }}>{note}</div>}
                     </div>
-                    <span className="text-xs text-neutral-400 flex-shrink-0 pt-0.5 whitespace-nowrap">
+                    <span className="text-[11px] font-mono text-ink-3 flex-shrink-0 pt-0.5 whitespace-nowrap">
                       {new Date(e.created_at + 'Z').toLocaleString(undefined, { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}
                     </span>
                   </div>

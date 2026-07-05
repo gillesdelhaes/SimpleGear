@@ -18,27 +18,27 @@ export default function PersonDetail() {
   })
 
   if (!person) return (
-    <div className="p-8 flex justify-center"><div className="w-8 h-8 border-2 border-sg-lime/30 border-t-sg-lime rounded-full animate-spin" /></div>
+    <div className="p-8 flex justify-center"><div className="w-8 h-8 border-2 rounded-full animate-spin" style={{ borderColor: 'var(--track)', borderTopColor: 'var(--b1)' }} /></div>
   )
 
   return (
-    <div className="px-7 pt-7 pb-12 max-w-4xl">
-      <div className="flex items-center gap-2 text-sm text-neutral-400 mb-6">
-        <Link to="/people" className="hover:text-neutral-600">People</Link>
+    <div className="max-w-4xl">
+      <div className="flex items-center gap-2 text-[12.5px] text-ink-3 mb-5">
+        <Link to="/people" className="hover:text-ink">People</Link>
         <span>/</span>
-        <span className="text-neutral-700 font-medium">{person.name}</span>
+        <span className="text-ink-2 font-medium">{person.name}</span>
       </div>
 
       <div className="flex items-center gap-5 mb-8">
-        <div className="w-16 h-16 rounded-full gradient-bg flex items-center justify-center text-white text-2xl font-bold flex-shrink-0">
+        <div className="avatar" style={{ width: 56, height: 56, borderRadius: 18, fontSize: 22 }}>
           {person.name.charAt(0).toUpperCase()}
         </div>
         <div>
-          <h1 className="text-2xl font-bold text-neutral-900 tracking-tight">{person.name}</h1>
-          <div className="text-sm text-neutral-500 mt-0.5">
+          <h1 className="text-2xl font-bold text-ink tracking-tight m-0">{person.name}</h1>
+          <div className="text-[13.5px] text-ink-2 mt-0.5">
             {person.department || ''}
           </div>
-          <div className="flex items-center gap-3 mt-1.5 text-xs text-neutral-400">
+          <div className="flex items-center gap-3 mt-1.5 text-xs text-ink-3">
             {person.email && <span>{person.email}</span>}
             {person.phone && <span>{person.phone}</span>}
             {person.employee_id && <span className="font-mono">{person.employee_id}</span>}
@@ -48,26 +48,26 @@ export default function PersonDetail() {
 
       {/* Current assets */}
       <div className="mb-6">
-        <h2 className="text-sm font-bold uppercase tracking-widest text-neutral-400 mb-3">
+        <h2 className="text-[10.5px] font-semibold uppercase tracking-[0.12em] text-ink-3 mb-2.5 mt-0">
           Currently assigned ({assets?.current.length ?? 0})
         </h2>
         {!assets?.current.length ? (
-          <div className="bg-white rounded-[14px] border border-neutral-100 p-6 text-center text-sm text-neutral-400">
+          <div className="panel p-6 text-center text-[13px] text-ink-3">
             No assets currently assigned
           </div>
         ) : (
-          <div className="bg-white rounded-[14px] border border-neutral-100 divide-y divide-neutral-50">
+          <div className="panel divide-y divide-track overflow-hidden">
             {assets.current.map((asset) => (
               <div key={asset.id} className="flex items-center gap-4 px-5 py-3">
                 <div className="flex-1 min-w-0">
-                  <Link to={`/assets/${asset.id}`} className="font-semibold text-sm text-neutral-900 hover:text-sg-forest">{asset.name}</Link>
+                  <Link to={`/assets/${asset.id}`} className="font-semibold text-[13.5px] text-ink hover:text-brand-ink">{asset.name}</Link>
                   {(asset.make || asset.model) && (
-                    <div className="text-xs text-neutral-400">{[asset.make, asset.model].filter(Boolean).join(' ')}</div>
+                    <div className="text-xs text-ink-3">{[asset.make, asset.model].filter(Boolean).join(' ')}</div>
                   )}
                 </div>
-                {asset.asset_tag && <span className="text-xs font-mono text-neutral-500">{asset.asset_tag}</span>}
+                {asset.asset_tag && <span className="text-xs font-mono text-ink-2">{asset.asset_tag}</span>}
                 {asset.status && <StatusBadge status={asset.status} />}
-                {asset.category && <span className="text-xs text-neutral-400">{asset.category.name}</span>}
+                {asset.category && <span className="text-xs text-ink-3">{asset.category.name}</span>}
               </div>
             ))}
           </div>
@@ -77,22 +77,22 @@ export default function PersonDetail() {
       {/* History */}
       {assets?.history && assets.history.length > 0 && (
         <div>
-          <h2 className="text-sm font-bold uppercase tracking-widest text-neutral-400 mb-3">Assignment history</h2>
-          <div className="bg-white rounded-[14px] border border-neutral-100 divide-y divide-neutral-50">
+          <h2 className="text-[10.5px] font-semibold uppercase tracking-[0.12em] text-ink-3 mb-2.5 mt-0">Assignment history</h2>
+          <div className="panel divide-y divide-track overflow-hidden">
             {assets.history.map((h) => (
               <div key={h.id} className="flex items-start gap-4 px-5 py-3">
-                <div className="w-6 h-6 rounded-full bg-neutral-100 flex items-center justify-center flex-shrink-0 mt-0.5">
-                  <svg width="10" height="10" fill="none" stroke="#9CA3AF" viewBox="0 0 24 24">
+                <div className="w-6 h-6 rounded-lg flex items-center justify-center flex-shrink-0 mt-0.5" style={{ background: 'var(--field)', border: '1px solid var(--edge)' }}>
+                  <svg width="10" height="10" fill="none" stroke="var(--ink-3)" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
                   </svg>
                 </div>
                 <div className="flex-1 min-w-0">
-                  <Link to={`/assets/${h.asset_id}`} className="text-sm font-medium text-neutral-800 hover:text-sg-forest">Asset #{h.asset_id}</Link>
-                  <div className="text-xs text-neutral-400 mt-0.5">
+                  <Link to={`/assets/${h.asset_id}`} className="text-[13.5px] font-medium text-ink hover:text-brand-ink">Asset #{h.asset_id}</Link>
+                  <div className="text-xs text-ink-3 mt-0.5">
                     {new Date(String(h.assigned_at)).toLocaleDateString()}
                     {h.released_at && ` → ${new Date(String(h.released_at)).toLocaleDateString()}`}
                   </div>
-                  {h.note && <div className="text-xs text-neutral-500 mt-1 font-mono bg-neutral-50 rounded px-2 py-0.5">{h.note}</div>}
+                  {h.note && <div className="text-xs text-ink-2 mt-1 font-mono rounded px-2 py-0.5" style={{ background: 'var(--field)' }}>{h.note}</div>}
                 </div>
               </div>
             ))}
