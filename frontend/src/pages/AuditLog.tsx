@@ -52,11 +52,11 @@ const ENTITY_FILTERS = [
 ]
 
 function actionColor(action: string): string {
-  if (action.endsWith('.deleted')) return 'bg-red-50 text-red-600'
-  if (action === 'asset.audited') return 'bg-sg-lime/10 text-sg-forest'
-  if (action.endsWith('.created') || action === 'import.completed') return 'bg-blue-50 text-blue-600'
-  if (action === 'user.login') return 'bg-neutral-100 text-neutral-500'
-  return 'bg-amber-50 text-amber-600'
+  if (action.endsWith('.deleted')) return 'bg-danger-tint text-danger-ink'
+  if (action === 'asset.audited') return 'bg-brand-tint text-brand-ink'
+  if (action.endsWith('.created') || action === 'import.completed') return 'bg-brand-tint text-brand-ink'
+  if (action === 'user.login') return 'bg-field text-ink-3'
+  return 'bg-warn-tint text-warn-ink'
 }
 
 function formatPayload(payload: Record<string, unknown> | null): string {
@@ -107,12 +107,12 @@ export default function AuditLog() {
   }
 
   return (
-    <div className="px-7 pt-7 pb-12 max-w-5xl">
-      <div className="flex items-center justify-between mb-5">
-        <p className="text-sm text-neutral-500">Append-only record of every change — who did what, when</p>
+    <div className="max-w-5xl">
+      <div className="flex items-center justify-between mb-3.5 gap-2 flex-wrap">
+        <p className="text-[13px] text-ink-2 m-0">Append-only record of every change — who did what, when.</p>
         <button
           onClick={exportCsv}
-          className="px-4 py-2 rounded-xl border border-neutral-200 text-sm font-semibold text-neutral-700 hover:border-sg-lime hover:text-sg-forest transition-colors flex items-center gap-1.5"
+          className="btn ghost sm"
         >
           <svg width="13" height="13" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M12 4v12m0 0l-4-4m4 4l4-4" />
@@ -123,32 +123,35 @@ export default function AuditLog() {
 
       {/* Filters */}
       <div className="flex items-center gap-3 mb-5 flex-wrap">
-        <select
-          value={entityType}
-          onChange={(e) => { setEntityType(e.target.value); setPage(1) }}
-          className="border border-neutral-200 rounded-xl px-3 py-2 text-sm bg-white outline-none focus:border-sg-lime"
-        >
-          {ENTITY_FILTERS.map((f) => <option key={f.value} value={f.value}>{f.label}</option>)}
-        </select>
+        <div className="selectwrap" style={{ width: 180 }}>
+          <select
+            value={entityType}
+            onChange={(e) => { setEntityType(e.target.value); setPage(1) }}
+            className="select"
+          >
+            {ENTITY_FILTERS.map((f) => <option key={f.value} value={f.value}>{f.label}</option>)}
+          </select>
+        </div>
         <input
           value={q}
           onChange={(e) => { setQ(e.target.value); setPage(1) }}
-          placeholder="Filter by asset, person, action..."
-          className="flex-1 min-w-[200px] border border-neutral-200 rounded-xl px-3 py-2 text-sm bg-white outline-none focus:border-sg-lime focus:ring-2 focus:ring-sg-lime/10"
+          placeholder="Filter by asset, person, action…"
+          className="input flex-1 min-w-[200px]"
+          style={{ width: 'auto' }}
         />
-        {data && <span className="text-xs text-neutral-400">{data.total} entries</span>}
+        {data && <span className="text-xs font-mono text-ink-3">{data.total} entries</span>}
       </div>
 
       {/* Log */}
-      <div className="bg-white rounded-[14px] border border-neutral-100 shadow-sm">
+      <div className="panel">
         {isLoading ? (
           <div className="p-8 flex justify-center">
-            <div className="w-8 h-8 border-2 border-sg-lime/30 border-t-sg-lime rounded-full animate-spin" />
+            <div className="w-8 h-8 border-2 rounded-full animate-spin" style={{ borderColor: 'var(--track)', borderTopColor: 'var(--b1)' }} />
           </div>
         ) : !data || data.items.length === 0 ? (
-          <div className="px-6 py-12 text-center text-sm text-neutral-400">No activity recorded yet</div>
+          <div className="px-6 py-12 text-center text-[13px] text-ink-3">No activity recorded yet.</div>
         ) : (
-          <div className="divide-y divide-neutral-50">
+          <div className="divide-y divide-track">
             {data.items.map((e) => {
               const detail = formatPayload(e.payload)
               return (
@@ -157,20 +160,20 @@ export default function AuditLog() {
                     {e.action.split('.')[1]?.replace('_', ' ') ?? e.action}
                   </span>
                   <div className="flex-1 min-w-0">
-                    <div className="text-sm text-neutral-700">
-                      <span className="font-semibold">{e.actor_name ?? 'System'}</span>{' '}
+                    <div className="text-[13.5px] text-ink-2">
+                      <span className="font-semibold text-ink">{e.actor_name ?? 'System'}</span>{' '}
                       {ACTION_LABELS[e.action] ?? e.action}{' '}
                       {e.entity_label && (
                         e.entity_type === 'asset' && e.entity_id && e.action !== 'asset.deleted' ? (
-                          <Link to={`/assets/${e.entity_id}`} className="font-semibold text-sg-forest hover:underline">{e.entity_label}</Link>
+                          <Link to={`/assets/${e.entity_id}`} className="font-semibold text-brand-ink hover:underline">{e.entity_label}</Link>
                         ) : (
-                          <span className="font-semibold">{e.entity_label}</span>
+                          <span className="font-semibold text-ink">{e.entity_label}</span>
                         )
                       )}
                     </div>
-                    {detail && <div className="text-xs text-neutral-400 mt-0.5 font-mono truncate">{detail}</div>}
+                    {detail && <div className="text-[11px] text-ink-3 mt-0.5 font-mono truncate">{detail}</div>}
                   </div>
-                  <span className="text-xs text-neutral-400 flex-shrink-0 pt-0.5 whitespace-nowrap" title={new Date(e.created_at + 'Z').toLocaleString()}>
+                  <span className="text-[11px] font-mono text-ink-3 flex-shrink-0 pt-0.5 whitespace-nowrap" title={new Date(e.created_at + 'Z').toLocaleString()}>
                     {new Date(e.created_at + 'Z').toLocaleString(undefined, { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}
                   </span>
                 </div>
@@ -186,15 +189,17 @@ export default function AuditLog() {
           <button
             disabled={page <= 1}
             onClick={() => setPage((p) => p - 1)}
-            className="px-3 py-1.5 rounded-lg border border-neutral-200 text-sm text-neutral-600 disabled:opacity-40 hover:bg-neutral-50"
+            className="btn ghost sm"
+            style={page <= 1 ? { opacity: 0.4 } : undefined}
           >
             Previous
           </button>
-          <span className="text-xs text-neutral-400">Page {page} of {data.pages}</span>
+          <span className="text-xs text-ink-3">Page {page} of {data.pages}</span>
           <button
             disabled={page >= data.pages}
             onClick={() => setPage((p) => p + 1)}
-            className="px-3 py-1.5 rounded-lg border border-neutral-200 text-sm text-neutral-600 disabled:opacity-40 hover:bg-neutral-50"
+            className="btn ghost sm"
+            style={page >= data.pages ? { opacity: 0.4 } : undefined}
           >
             Next
           </button>

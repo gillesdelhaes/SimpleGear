@@ -25,14 +25,14 @@ function IconDownload() {
 function ExportCard({ title, description, path, filename }: { title: string; description: string; path: string; filename: string }) {
   const { showToast } = useToast()
   return (
-    <div className="bg-white rounded-[14px] border border-neutral-100 p-5 flex items-start justify-between gap-4">
+    <div className="panel p-5 flex items-start justify-between gap-4">
       <div>
-        <div className="text-sm font-semibold text-neutral-800">{title}</div>
-        <div className="text-xs text-neutral-500 mt-1 leading-relaxed">{description}</div>
+        <div className="text-[13.5px] font-semibold text-ink">{title}</div>
+        <div className="text-xs text-ink-2 mt-1 leading-relaxed">{description}</div>
       </div>
       <button
         onClick={() => downloadCsv(path, filename).catch(() => showToast('Export failed', 'error'))}
-        className="px-3 py-2 rounded-xl border border-neutral-200 text-sm font-semibold text-neutral-700 hover:border-sg-lime hover:text-sg-forest transition-colors flex items-center gap-1.5 flex-shrink-0"
+        className="btn ghost sm flex-shrink-0"
       >
         <IconDownload />
         CSV
@@ -45,11 +45,11 @@ function ComplianceRing({ pct }: { pct: number }) {
   const radius = 34
   const circumference = 2 * Math.PI * radius
   const filled = (pct / 100) * circumference
-  const color = pct >= 90 ? '#15803D' : pct >= 60 ? '#F59E0B' : '#EF4444'
+  const color = pct >= 90 ? 'var(--brand-ink)' : pct >= 60 ? 'var(--warn-ink)' : 'var(--danger-ink)'
   return (
     <div className="relative w-24 h-24 flex-shrink-0">
       <svg width="96" height="96" viewBox="0 0 96 96">
-        <circle cx="48" cy="48" r={radius} fill="none" stroke="#F2F2F2" strokeWidth="8" />
+        <circle cx="48" cy="48" r={radius} fill="none" stroke="var(--track)" strokeWidth="8" />
         <circle
           cx="48" cy="48" r={radius} fill="none" stroke={color} strokeWidth="8"
           strokeLinecap="round"
@@ -58,7 +58,7 @@ function ComplianceRing({ pct }: { pct: number }) {
         />
       </svg>
       <div className="absolute inset-0 flex items-center justify-center">
-        <span className="text-lg font-bold text-neutral-900">{pct}%</span>
+        <span className="text-lg font-bold text-ink">{pct}%</span>
       </div>
     </div>
   )
@@ -73,73 +73,73 @@ export default function Reports() {
   const audit = summary?.audit
 
   return (
-    <div className="px-7 pt-7 pb-12 max-w-5xl">
+    <div className="max-w-5xl">
       {/* Audit compliance */}
-      <div className="bg-white rounded-[14px] border border-neutral-100 shadow-sm p-6 mb-6">
-        <h2 className="text-sm font-bold text-neutral-700 uppercase tracking-wider mb-5">Audit Compliance</h2>
+      <div className="panel p-6 mb-3.5">
+        <h2 className="text-[14.5px] font-semibold text-ink mb-5 mt-0">Audit compliance</h2>
         <div className="flex items-center gap-8 flex-wrap">
           <ComplianceRing pct={audit?.compliance_pct ?? 0} />
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-6 flex-1">
             <div>
-              <div className="text-2xl font-bold text-neutral-900">{audit?.total ?? 0}</div>
-              <div className="text-xs text-neutral-500 mt-0.5">Total assets</div>
+              <div className="text-2xl font-bold text-ink">{audit?.total ?? 0}</div>
+              <div className="text-xs text-ink-2 mt-0.5">Total assets</div>
             </div>
             <div>
-              <div className="text-2xl font-bold text-sg-forest">{audit?.audited_ok ?? 0}</div>
-              <div className="text-xs text-neutral-500 mt-0.5">Audited & current</div>
+              <div className="text-2xl font-bold text-brand-ink">{audit?.audited_ok ?? 0}</div>
+              <div className="text-xs text-ink-2 mt-0.5">Audited & current</div>
             </div>
             <div>
-              <div className={`text-2xl font-bold ${(audit?.overdue ?? 0) > 0 ? 'text-red-500' : 'text-neutral-900'}`}>{audit?.overdue ?? 0}</div>
-              <div className="text-xs text-neutral-500 mt-0.5">Audit overdue</div>
+              <div className={`text-2xl font-bold ${(audit?.overdue ?? 0) > 0 ? 'text-danger-ink' : 'text-ink'}`}>{audit?.overdue ?? 0}</div>
+              <div className="text-xs text-ink-2 mt-0.5">Audit overdue</div>
             </div>
             <div>
-              <div className={`text-2xl font-bold ${(audit?.never_audited ?? 0) > 0 ? 'text-amber-500' : 'text-neutral-900'}`}>{audit?.never_audited ?? 0}</div>
-              <div className="text-xs text-neutral-500 mt-0.5">Never audited</div>
+              <div className={`text-2xl font-bold ${(audit?.never_audited ?? 0) > 0 ? 'text-warn-ink' : 'text-ink'}`}>{audit?.never_audited ?? 0}</div>
+              <div className="text-xs text-ink-2 mt-0.5">Never audited</div>
             </div>
           </div>
         </div>
         {(audit?.never_audited ?? 0) + (audit?.overdue ?? 0) > 0 && (
-          <p className="text-xs text-neutral-400 mt-4">
-            Open an asset and hit <span className="font-semibold text-sg-forest">Audit</span> to record a physical check, or select assets on the{' '}
-            <Link to="/assets" className="text-sg-forest hover:underline">Assets</Link> page for a bulk audit.
+          <p className="text-xs text-ink-3 mt-4">
+            Open an asset and hit <span className="font-semibold text-brand-ink">Audit</span> to record a physical check, or select assets on the{' '}
+            <Link to="/assets" className="text-brand-ink hover:underline">Assets</Link> page for a bulk audit.
           </p>
         )}
       </div>
 
       {/* Key figures */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-        <div className="bg-white rounded-[14px] p-5 border border-neutral-100 shadow-sm">
-          <div className="text-2xl font-bold tracking-tight text-neutral-900">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3.5 mb-3.5">
+        <div className="panel p-5">
+          <div className="text-2xl font-bold tracking-tight text-ink">
             {summary ? `$${summary.total_value.toLocaleString(undefined, { maximumFractionDigits: 0 })}` : '—'}
           </div>
-          <div className="text-xs font-semibold text-neutral-600 mt-1">Inventory value</div>
+          <div className="text-xs font-medium text-ink-2 mt-1">Inventory value</div>
         </div>
-        <div className="bg-white rounded-[14px] p-5 border border-neutral-100 shadow-sm">
-          <div className="text-2xl font-bold tracking-tight text-amber-500">{summary?.warranty_expiring_90d ?? 0}</div>
-          <div className="text-xs font-semibold text-neutral-600 mt-1">Warranties expiring ≤ 90d</div>
+        <div className="panel p-5">
+          <div className="text-2xl font-bold tracking-tight text-warn-ink">{summary?.warranty_expiring_90d ?? 0}</div>
+          <div className="text-xs font-medium text-ink-2 mt-1">Warranties expiring ≤ 90d</div>
         </div>
-        <div className="bg-white rounded-[14px] p-5 border border-neutral-100 shadow-sm">
-          <div className="text-2xl font-bold tracking-tight text-red-500">{summary?.eol_within_90d ?? 0}</div>
-          <div className="text-xs font-semibold text-neutral-600 mt-1">EOL within 90d</div>
+        <div className="panel p-5">
+          <div className="text-2xl font-bold tracking-tight text-danger-ink">{summary?.eol_within_90d ?? 0}</div>
+          <div className="text-xs font-medium text-ink-2 mt-1">EOL within 90d</div>
         </div>
-        <div className="bg-white rounded-[14px] p-5 border border-neutral-100 shadow-sm">
-          <div className="text-2xl font-bold tracking-tight text-neutral-900">{summary?.maintenance_open ?? 0}</div>
-          <div className="text-xs font-semibold text-neutral-600 mt-1">Open maintenance</div>
+        <div className="panel p-5">
+          <div className="text-2xl font-bold tracking-tight text-ink">{summary?.maintenance_open ?? 0}</div>
+          <div className="text-xs font-medium text-ink-2 mt-1">Open maintenance</div>
         </div>
       </div>
 
       {/* Value by location */}
       {summary && summary.by_location.length > 0 && (
-        <div className="bg-white rounded-[14px] border border-neutral-100 shadow-sm mb-8">
-          <div className="px-6 py-4 border-b border-neutral-100">
-            <h2 className="text-sm font-bold text-neutral-700 uppercase tracking-wider">Assets by Location</h2>
+        <div className="panel mb-3.5">
+          <div className="panel-head">
+            <h2>Assets by location</h2>
           </div>
-          <div className="divide-y divide-neutral-50">
+          <div className="divide-y divide-track px-2 py-2">
             {summary.by_location.map((l) => (
               <div key={l.name} className="flex items-center px-6 py-3">
-                <span className="flex-1 text-sm text-neutral-700">{l.name}</span>
-                <span className="text-sm font-semibold text-neutral-900 w-16 text-right">{l.count}</span>
-                <span className="text-xs font-mono text-neutral-400 w-28 text-right">
+                <span className="flex-1 text-[13px] text-ink-2">{l.name}</span>
+                <span className="text-[13px] font-semibold text-ink w-16 text-right">{l.count}</span>
+                <span className="text-xs font-mono text-ink-3 w-28 text-right">
                   ${l.value.toLocaleString(undefined, { maximumFractionDigits: 0 })}
                 </span>
               </div>
@@ -149,8 +149,8 @@ export default function Reports() {
       )}
 
       {/* Exports */}
-      <h2 className="text-sm font-bold text-neutral-700 uppercase tracking-wider mb-4">Exports</h2>
-      <div className="grid sm:grid-cols-2 gap-4">
+      <h2 className="text-[10.5px] font-semibold uppercase tracking-[0.12em] text-ink-3 mb-3 mt-6">Exports</h2>
+      <div className="grid sm:grid-cols-2 gap-3.5">
         <ExportCard
           title="Full asset register"
           description="Every asset with status, location, assignee, purchase and lifecycle data. Your master inventory record."
