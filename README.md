@@ -3,9 +3,8 @@
 IT asset management without the enterprise weight. Know what you own, who has it,
 and when it expires — for teams of 5–50, deployed with one command.
 
-Part of the **Simple\* galaxy** of self-hosted ops tools, wearing the shared
-**Glasshouse** design system: frosted glass panels in a room lit by the app's own
-color, with first-class dark and light themes.
+Part of a suite of simple, self-hosted ops tools: each app does one thing well,
+runs from a single `docker compose up`, and needs zero configuration to start.
 
 ![Dashboard](docs/screenshots/dashboard-dark.png)
 
@@ -26,9 +25,7 @@ color, with first-class dark and light themes.
 
 ![Asset detail](docs/screenshots/asset-detail-dark.png)
 
-## Light theme
-
-Both themes are first-class — toggle from the top bar, the choice persists.
+Dark and light themes, toggled from the top bar — the choice persists per user.
 
 ![Dashboard light](docs/screenshots/dashboard-light.png)
 
@@ -49,8 +46,6 @@ Open **http://localhost:4000** — a one-time setup screen creates your admin ac
 
 - **Backend:** Python + FastAPI, PostgreSQL 16, SQLModel + Alembic
 - **Frontend:** React 18 + TypeScript, Vite, Tailwind CSS, TanStack Query
-- **Design:** Glasshouse — the Simple\* galaxy design system (tokens + components in
-  `frontend/src/glasshouse.css`; per-app identity is two CSS variables)
 - **Deploy:** 3 containers via Docker Compose (db + api + frontend)
 
 ## License
