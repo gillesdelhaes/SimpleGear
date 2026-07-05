@@ -23,10 +23,10 @@ const ICONS: Record<ToastType, string> = {
 }
 
 const COLORS: Record<ToastType, string> = {
-  success: '#22C55E',
-  error: '#EF4444',
-  warning: '#F59E0B',
-  info: '#3B82F6',
+  success: 'var(--brand-ink)',
+  error: 'var(--danger-ink)',
+  warning: 'var(--warn-ink)',
+  info: 'var(--ink-2)',
 }
 
 export function ToastProvider({ children }: { children: React.ReactNode }) {
@@ -45,16 +45,16 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
         {toasts.map((t) => (
           <div
             key={t.id}
-            className="bg-white border border-neutral-200 rounded-xl shadow-lg flex items-center gap-3 px-4 py-3 pointer-events-auto animate-fade-up"
-            style={{ borderLeft: `3px solid ${COLORS[t.type]}` }}
+            className="overlay-surface flex items-center gap-3 px-4 py-3 pointer-events-auto animate-fade-up"
+            style={{ borderRadius: 16, boxShadow: 'inset 3px 0 0 ' + COLORS[t.type] + ', var(--overlay-shadow)' }}
           >
             <span className="text-sm font-bold" style={{ color: COLORS[t.type] }}>
               {ICONS[t.type]}
             </span>
-            <span className="text-sm text-neutral-700 flex-1">{t.message}</span>
+            <span className="text-sm text-ink flex-1">{t.message}</span>
             <button
               onClick={() => setToasts((prev) => prev.filter((x) => x.id !== t.id))}
-              className="text-neutral-400 hover:text-neutral-600 text-xs"
+              className="text-ink-3 hover:text-ink text-xs bg-transparent border-0 cursor-pointer"
             >
               ✕
             </button>
