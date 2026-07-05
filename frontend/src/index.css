@@ -12,6 +12,46 @@
   }
 }
 
+/* Manual sidebar collapse — mirrors glasshouse's ≤880px behavior at any width */
+.sidebar.collapsed {
+  width: 70px;
+  flex-basis: 70px;
+  padding: 22px 10px 14px;
+}
+.sidebar.collapsed .wordmark,
+.sidebar.collapsed .nav-item span,
+.sidebar.collapsed .nav-sep,
+.sidebar.collapsed .side-foot .who {
+  display: none;
+}
+.sidebar.collapsed .nav-item {
+  justify-content: center;
+  padding: 11px;
+}
+.sidebar.collapsed .side-foot {
+  flex-direction: column;
+  justify-content: center;
+  background: transparent;
+  border: 0;
+}
+.collapse-toggle {
+  margin-top: 10px;
+  width: 100%;
+  padding: 5px 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--field);
+  border: 1px solid var(--edge);
+  border-radius: 10px;
+  color: var(--ink-3);
+  cursor: pointer;
+  transition: color 0.15s, background 0.15s;
+}
+.collapse-toggle:hover {
+  color: var(--ink);
+}
+
 @layer utilities {
   .scrollbar-thin::-webkit-scrollbar {
     width: 4px;
