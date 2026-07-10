@@ -56,15 +56,6 @@ export default function Setup() {
           One-time setup, under a minute. Create the admin account, optionally load
           sample assets, start tracking gear.
         </p>
-        <div className="family">
-          <span className="dots">
-            <i style={{ '--c1': '#84CC16', '--c2': '#15803D' } as React.CSSProperties} />
-            <i style={{ '--c1': '#FF4713', '--c2': '#AD1164' } as React.CSSProperties} />
-            <i style={{ '--c1': '#00C896', '--c2': '#3B82F6' } as React.CSSProperties} />
-          </span>
-          Part of the Simple* galaxy
-        </div>
-
         <div className="shard s1">
           <span className="ico">
             <svg width="15" height="15" viewBox="0 0 18 18" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">

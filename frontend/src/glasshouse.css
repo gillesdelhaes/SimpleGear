@@ -442,10 +442,6 @@ td .who.none{color:var(--ink-3); font-size:12.5px}
 /* default shard placements for the login brand side (max two shards) */
 .shard.s1{top:14%; right:12%; rotate:2deg}
 .shard.s2{bottom:20%; right:22%; rotate:-2deg; animation-delay:-3.5s}
-.family{display:flex; align-items:center; gap:9px; margin-top:26px;
-  font-size:12px; color:rgba(242,244,248,.45)}
-.family .dots{display:flex; gap:6px}
-.family .dots i{width:10px; height:10px; border-radius:50%; background:linear-gradient(135deg,var(--c1),var(--c2))}
 .form-side{
   flex:1; position:relative; display:grid; place-items:center; padding:32px;
   background:
