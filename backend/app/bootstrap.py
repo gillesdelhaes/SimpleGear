@@ -1,20 +1,16 @@
 """
 Bootstrap script — run by entrypoint.sh before uvicorn starts.
 
-Responsibilities:
-  1. Ensure a stable APP_SECRET_KEY exists as a local file on its own
-     Docker volume — deliberately NOT in Postgres. This key signs every
-     JWT the API issues, so it must never live in the same failure domain
-     as the database it protects: a leaked DB backup, snapshot, or replica
-     must not also hand over the key needed to forge sessions. The volume
-     is still fully automatic — nothing to configure, no .env file, no
-     human in the loop.
-  2. Migrate a legacy DB-stored key (pre-dating this file-based scheme)
-     out to the file on first run, then blank the DB row.
-  3. Print the resolved key to stdout (captured by entrypoint.sh and
-     exported as APP_SECRET_KEY so the API process inherits it).
+Ensures a stable APP_SECRET_KEY exists as a local file on its own Docker
+volume — deliberately NOT in Postgres. This key signs every JWT the API
+issues, so it must never live in the same failure domain as the database
+it protects: a leaked DB backup, snapshot, or replica must not also hand
+over the key needed to forge sessions. The volume is still fully
+automatic — nothing to configure, no .env file, no human in the loop.
 
-All diagnostic output goes to stderr so stdout carries only the key.
+Prints the resolved key to stdout (captured by entrypoint.sh and exported
+as APP_SECRET_KEY so the API process inherits it). All diagnostic output
+goes to stderr so stdout carries only the key.
 
 Usage (from entrypoint.sh):
     export APP_SECRET_KEY=$(python -m app.bootstrap)
@@ -25,44 +21,6 @@ import sys
 from pathlib import Path
 
 _KEY_PATH = Path(os.environ.get("APP_SECRET_KEY_PATH", "/data/secret/app_secret_key"))
-
-
-def _migrate_legacy_db_key() -> str | None:
-    """
-    One-time migration: older versions stored the key in the app_settings
-    table. If no key file exists yet, check for one there and pull it out —
-    preserving it means existing JWTs stay valid across the upgrade — then
-    blank the DB row so the plaintext key stops living there. Returns None
-    (not an error) if there's nothing to migrate, e.g. a genuinely fresh
-    install.
-    """
-    db_url = os.environ.get(
-        "DATABASE_URL",
-        "postgresql+asyncpg://postgres:postgres@db:5432/simplegear",
-    )
-    sync_url = db_url.replace("+asyncpg", "").replace("postgresql+psycopg2", "postgresql")
-    try:
-        import psycopg2
-        conn = psycopg2.connect(sync_url)
-        conn.autocommit = True
-        cur = conn.cursor()
-        cur.execute("SELECT value FROM app_settings WHERE key = 'app_secret_key'")
-        row = cur.fetchone()
-        if row and row[0]:
-            legacy_key = row[0]
-            cur.execute(
-                "UPDATE app_settings SET value = NULL WHERE key = 'app_secret_key'"
-            )
-            cur.close()
-            conn.close()
-            print("[bootstrap] Migrated APP_SECRET_KEY out of the database to the local key file", file=sys.stderr)
-            return legacy_key
-        cur.close()
-        conn.close()
-    except Exception as exc:
-        print(f"[bootstrap] Note: could not check for a legacy DB-stored key: {exc}", file=sys.stderr)
-    return None
-
 
 # ── Caller supplied a key explicitly (e.g. injected from an external
 # secrets manager) — use it as-is, nothing to persist locally. ────────────────
@@ -85,9 +43,9 @@ try:
 except Exception as exc:
     print(f"[bootstrap] Warning: could not read key file: {exc}", file=sys.stderr)
 
-# ── Nothing on disk — migrate a legacy DB key, or generate a fresh one ────────
+# ── Nothing on disk — generate a fresh key ─────────────────────────────────────
 
-key = _migrate_legacy_db_key() or secrets.token_hex(32)
+key = secrets.token_hex(32)
 
 try:
     _KEY_PATH.parent.mkdir(parents=True, exist_ok=True)
