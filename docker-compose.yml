@@ -22,6 +22,11 @@ services:
       db:
         condition: service_healthy
     restart: unless-stopped
+    volumes:
+      # Master JWT signing key — deliberately its own volume, separate from
+      # Postgres, so a leaked DB backup/snapshot doesn't also hand over the
+      # key needed to forge sessions. See app/bootstrap.py.
+      - app_secret:/data/secret
     healthcheck:
       test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/api/health')"]
       interval: 10s
@@ -39,3 +44,4 @@ services:
 
 volumes:
   pgdata:
+  app_secret:

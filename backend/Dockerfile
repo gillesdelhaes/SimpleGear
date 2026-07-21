@@ -14,7 +14,7 @@ RUN groupadd --gid 1001 appgroup && \
 WORKDIR /app
 COPY --chown=appuser:appgroup . .
 
-RUN mkdir -p /data && chown -R appuser:appgroup /data
+RUN mkdir -p /data/secret && chown -R appuser:appgroup /data
 RUN chmod +x /app/entrypoint.sh
 
 USER appuser
